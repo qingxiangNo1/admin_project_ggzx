@@ -15,7 +15,7 @@ app.use(ElementPlus, {
 //安装elementui-plus插件
 app.use(ElementPlus)
 //svg需要的配置代码
-// import 'virtual:svg-icons-register'
+import 'virtual:svg-icons-register'
 //使用自定义函数：注册全局组件
 // import globalComponent from '@/components'
 // app.use(globalComponent)
