@@ -20,6 +20,6 @@ import 'virtual:svg-icons-register'
 import globalComponent from '@/components'
 app.use(globalComponent)
 //引入全局样式
-// import '@/style/index.scss'
+import '@/styles/index.scss'
 //将应用挂载到挂载点上
 app.mount('#app')

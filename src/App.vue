@@ -17,7 +17,9 @@ import Svgicon from '@/components/SvgIcon/index.vue'
 </script>
 <style scoped lang="scss">
 div {
-
+   h1{
+    color: $color;
+   }
   }
 </style>
 
