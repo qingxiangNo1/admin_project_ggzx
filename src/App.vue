@@ -2,6 +2,7 @@
   <div>
     <h1>woaini</h1>
     <el-button type="primary">hhhh</el-button>
+    <h1>wozhengzaiceshi</h1>
   </div>
 </template>
 
