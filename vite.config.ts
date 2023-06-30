@@ -1,5 +1,5 @@
 // vite.config.ts
-import {defineConfig ,loadEnv} from 'vite'
+import {defineConfig} from 'vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
