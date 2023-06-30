@@ -34,6 +34,21 @@ let loading = ref(false)
 // 获取路由器
 let $router = useRouter()
 let loginForms = ref()
+//自定义校验规则
+const validatorUserName =(rule:any,value:any,callback:any) => {
+    if(value.length>=5&&value.length<=10){
+        callback();
+    }else{
+        callback(new Error('账号长度是5-10位'))
+    }
+}
+const validatorPassword =(rule:any,value:any,callback:any) => {
+    if(value.length>=6&&value.length<=15){
+        callback();
+    }else{
+        callback(new Error('密码长度是6-15位'))
+    }
+}
 //收集账号和密码的数据
 let loginForm = reactive({username:'admin',password:'111111'})
 const rules = {
@@ -44,18 +59,20 @@ const rules = {
     //min：规则内可输入最小文本
     //max：规则内可输入最多文本
     username:[
-        {required:true,message:'用户名不能为空',trigger:"blur"},
-        {required:true,min:6,max:10,message:'账号长度在6-10位',trigger:'change'}
+        // {required:true,message:'用户名不能为空',trigger:"blur"},
+        // {required:true,min:6,max:10,message:'账号长度在6-10位',trigger:'change'}
+        {required:true,validator:validatorUserName,trigger:'change'}
     ],
     password:[
-        {requird:true,min:6,max:15,message:'密码的长度在6-15位',trigger:'change'}
+        // {requird:true,min:6,max:15,message:'密码的长度在6-15位',trigger:'change'}
+        {trigger:'change',validator:validatorPassword}
     ]
 }
 //登录按钮回调
 const login  = async() => {
     // console.log(loginForms.value);
     const result = loginForms.value.validate();
-    console.log(result);
+    // console.log(result);
   try {
     //登录加载效果开始
     loading.value = true
