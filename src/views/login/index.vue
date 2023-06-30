@@ -3,14 +3,14 @@
         <el-row>
             <el-col :span="12" :xs="0"></el-col>
             <el-col :span="12" :xs="24">
-                <el-form class="login_form">
+                <el-form class="login_form" :model="loginForm" :rules="rules" ref="loginForms">
                     <h1>Hello</h1>
                     <h2>欢迎访问庆祥甄选</h2>
-                    <el-form-item>
-                        <el-input :prefix-icon="User" v-model="loginForm.username"></el-input>
+                    <el-form-item prop="username">
+                        <el-input :prefix-icon="User" v-model="loginForm.username" ></el-input>
                     </el-form-item>
-                    <el-form-item>
-                        <el-input type="password" :prefix-icon="Lock" v-model="loginForm.password" show-password></el-input>
+                    <el-form-item prop="password">
+                        <el-input type="password" :prefix-icon="Lock" v-model="loginForm.password" show-password ></el-input>
                     </el-form-item>
                     <el-form-item >
                         <el-button type="primary" class="login_btn" @click="login" :loading="loading">登录</el-button>
@@ -33,10 +33,29 @@ let useStore = useUserStore()
 let loading = ref(false)
 // 获取路由器
 let $router = useRouter()
+let loginForms = ref()
 //收集账号和密码的数据
 let loginForm = reactive({username:'admin',password:'111111'})
-
+const rules = {
+    //规则对象属性：
+    //required，代表这个字段是务必校验的
+    //message：错误提示信息
+    //trigger：触发方式blur 是失去焦点 change是文本发生改变时
+    //min：规则内可输入最小文本
+    //max：规则内可输入最多文本
+    username:[
+        {required:true,message:'用户名不能为空',trigger:"blur"},
+        {required:true,min:6,max:10,message:'账号长度在6-10位',trigger:'change'}
+    ],
+    password:[
+        {requird:true,min:6,max:15,message:'密码的长度在6-15位',trigger:'change'}
+    ]
+}
+//登录按钮回调
 const login  = async() => {
+    // console.log(loginForms.value);
+    const result = loginForms.value.validate();
+    console.log(result);
   try {
     //登录加载效果开始
     loading.value = true
