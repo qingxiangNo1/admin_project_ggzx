@@ -25,14 +25,17 @@
 import { User,Lock } from '@element-plus/icons-vue';
 import { reactive,ref } from 'vue';
 import useUserStore from "@/store/modules/user";
-import {useRouter} from 'vue-router'
+import {useRouter} from 'vue-router';
 import { ElNotification } from 'element-plus';
+//引入获取当前时间的函数
+import {GET_TIME} from '@/utils/time';
 let useStore = useUserStore()
 let loading = ref(false)
 // 获取路由器
 let $router = useRouter()
 //收集账号和密码的数据
 let loginForm = reactive({username:'admin',password:'111111'})
+
 const login  = async() => {
   try {
     //登录加载效果开始
@@ -44,7 +47,8 @@ const login  = async() => {
     // 登陆成功提示信息
     ElNotification  ({
         type:'success',
-        message:'登陆成功'
+        title:'欢迎回来',
+        message:`hi,${GET_TIME()}`
     })
   } catch (error) {
     //登录加载效果结束
