@@ -7,12 +7,15 @@ import { reqLogin } from '@/api/user'
 import {userState} from './types/type'
 //引入存储函数
 import { SET_TOKEN,GET_TOKEN } from '@/utils/token'
+//引入路由（常量路由）
+import { constantRoute } from '@/router/routes'
 //创建用户小仓库
 let useUserStore = defineStore('User', {
     //小仓库存储数据的地方
     state: ():userState => {
         return {
-            token:GET_TOKEN()//用户唯一标识token
+            token:GET_TOKEN(),//用户唯一标识token
+            menuRoutes:constantRoute//仓库存储数据生成菜单需要数组（路由）
         }
     },
     actions:{
