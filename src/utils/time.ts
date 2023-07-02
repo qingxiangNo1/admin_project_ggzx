@@ -15,7 +15,7 @@ export const GET_TIME =() => {
     }else{
         message = '晚上好，要早些休息哦'
     }
-    console.log(message);
+    // console.log(message);
     return message;
     
 }
