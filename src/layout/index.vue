@@ -1,7 +1,9 @@
 <template>
     <div class="layout_contain">
         <h1></h1>
-        <div class="layout_left">123</div>
+        <div class="layout_left">
+            <LOGO></LOGO>
+        </div>
         <div class="layout_top">456</div>
         <div class="layout_main">
             <p style="height: 100000px">woshi ni die</p>
@@ -10,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-
+import LOGO from './logo/index.vue'
 </script>
 
 <style scoped lang="scss">
