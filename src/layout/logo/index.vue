@@ -14,7 +14,7 @@ import setting from '@/setting';
     display: flex;
     align-items: center;
     width: 100%;
-    height: 50px;
+    height: $left-menu-logo-height;
     color: white;
     padding: 15px;
     img{
