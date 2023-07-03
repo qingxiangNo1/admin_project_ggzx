@@ -13,7 +13,11 @@
 import BreadCrumb from './breadcrumb/index.vue'
 import Setting from './setting/index.vue'
 </script>
-
+<script lang="ts">
+export default{
+    name:'Tabbar'
+}
+</script>
 
 <style scoped lang="scss">
 .tabbar {
@@ -27,7 +31,7 @@ import Setting from './setting/index.vue'
         display: flex;
         align-items: center;
         margin-left: 10px;
-        background: yellowgreen;
+        
     }
 
     .tabbar-right {

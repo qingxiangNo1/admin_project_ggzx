@@ -8,7 +8,11 @@
 <script setup lang="ts">
 import setting from '@/setting';
 </script>
-
+<script lang="ts">
+export default{
+    name:'Logo'
+}
+</script>
 <style scoped lang="scss">
   .logo{
     display: flex;
@@ -18,8 +22,8 @@ import setting from '@/setting';
     color: white;
     padding: 15px;
     img{
-        width: 60px;
-        height: 60px;
+        width: 28px;
+        height: 28px;
     }
     p{
         font-size: 15px;

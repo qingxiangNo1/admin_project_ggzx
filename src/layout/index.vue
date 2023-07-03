@@ -5,17 +5,17 @@
             <LOGO></LOGO>
             <!-- 展示菜单   -->
             <el-scrollbar class="scrollbar">
-                <el-menu background-color="#001529" text-color="white" :default-active="$router.path">
+                <el-menu :collapse="LayOutSettingStore.fold?true:false" background-color="#001529" text-color="white" :default-active="$router.path">
                     <Menu :menuList="userStore.menuRoutes"></Menu>
                 </el-menu>
             </el-scrollbar>
         </div>
         <!-- 顶部导航 -->
-        <div class="layout_top">
+        <div class="layout_top" :collapse-transition="false" :class="{ fold: LayOutSettingStore.fold ? true : false }">
             <Tabbar></Tabbar>
         </div>
         <!-- 内容区域 -->
-        <div class="layout_main">
+        <div class="layout_main" :collapse-transition="false" :class="{ fold: LayOutSettingStore.fold ? true : false }">
             <Main></Main>
         </div>
     </div>
@@ -27,17 +27,23 @@ import Menu from './menu/index.vue'
 import useUserStore from '@/store/modules/user';
 import Main from './main/index.vue'
 import { useRoute } from 'vue-router';//引入路由对象
-import Tabbar from './tabbar/index.vue'
+import Tabbar from './tabbar/index.vue'//引入tabbar组件
+import useLayOutSettingStore from '@/store/modules/setting';//获取折叠菜单的仓库
+let LayOutSettingStore = useLayOutSettingStore();
 let userStore = useUserStore();
 const $router = useRoute();
 
 </script>
-
+<script lang="ts">
+export default{
+    name:'Layout'
+}
+</script>
 <style scoped lang="scss">
 .layout_contain {
     width: 100%;
     height: 100vh;
-    background: yellowgreen;
+    
 }
 
 .layout_left {
@@ -61,6 +67,11 @@ const $router = useRoute();
     background: rgb(0, 153, 255);
     right: 0px;
     top: 0px;
+    // transition: all 0.3s;
+        &.fold {
+            width: calc(100vw - $left-menu-fold-width );
+            left: $left-menu-fold-width;
+        }
 }
 
 .layout_main {
@@ -72,5 +83,10 @@ const $router = useRoute();
     top: 50px;
     padding: 20px;
     overflow: auto;
+    // transition: all 0.3s;
+        &.fold {
+            width: calc(100vw - $left-menu-fold-width );
+            left: $left-menu-fold-width;
+        }
 }
 </style>

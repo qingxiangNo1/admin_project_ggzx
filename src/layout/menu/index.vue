@@ -4,13 +4,10 @@
         <template v-for="(item, index) in menuList" :key="item.path">
             <!-- 没有子路由 -->
             <el-menu-item v-if="!item.children && !item.meta.hidden" :index="item.path" @click="goRoute">
-
                 <el-icon>
                     <component :is="item.meta.icon"></component>
                 </el-icon>
                 <template #title>
-
-
                     <span>{{ item.meta.title }}</span>
                 </template>
             </el-menu-item>
