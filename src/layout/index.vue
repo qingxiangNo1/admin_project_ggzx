@@ -71,6 +71,6 @@ const $router = useRoute();
     right: 0px;
     top: 50px;
     padding: 20px;
-    overflow: auto;+
+    overflow: auto;
 }
 </style>
