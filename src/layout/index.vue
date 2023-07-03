@@ -5,13 +5,15 @@
             <LOGO></LOGO>
             <!-- 展示菜单   -->
             <el-scrollbar class="scrollbar">
-                <el-menu background-color="#001529" text-color="white">
+                <el-menu background-color="#001529" text-color="white" :default-active="$router.path">
                     <Menu :menuList="userStore.menuRoutes"></Menu>
                 </el-menu>
             </el-scrollbar>
         </div>
         <!-- 顶部导航 -->
-        <div class="layout_top">456</div>
+        <div class="layout_top">
+            <Tabbar></Tabbar>
+        </div>
         <!-- 内容区域 -->
         <div class="layout_main">
             <Main></Main>
@@ -24,7 +26,11 @@ import LOGO from './logo/index.vue'
 import Menu from './menu/index.vue'
 import useUserStore from '@/store/modules/user';
 import Main from './main/index.vue'
+import { useRoute } from 'vue-router';//引入路由对象
+import Tabbar from './tabbar/index.vue'
 let userStore = useUserStore();
+const $router = useRoute();
+
 </script>
 
 <style scoped lang="scss">
@@ -38,7 +44,7 @@ let userStore = useUserStore();
     width: $left-menu-width;
     height: 100vh;
     background: $left-menu-background;
-
+    color: white;
     .scrollbar {
         width: 100%;
         height: calc(100vh - $left-menu-logo-height);
@@ -61,10 +67,10 @@ let userStore = useUserStore();
     position: absolute;
     width: calc(100% - $left-menu-width);
     height: calc(100vh - $top-menu-height);
-    background: rgb(17, 224, 17);
+    background: rgb(41, 196, 235);
     right: 0px;
     top: 50px;
     padding: 20px;
-    overflow: auto;
+    overflow: auto;+
 }
 </style>
