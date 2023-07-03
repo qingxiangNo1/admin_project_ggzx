@@ -73,7 +73,6 @@ export default{
             left: $left-menu-fold-width;
         }
 }
-
 .layout_main {
     position: absolute;
     width: calc(100% - $left-menu-width);
