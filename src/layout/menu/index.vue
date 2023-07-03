@@ -11,7 +11,7 @@
             </template>
         </el-menu-item>
         <!-- 有子路由但只有一个 -->
-        <el-menu-item v-if="item.children&&item.children.length==1&&!item.meta.hidden" :index="item.children[0].path">
+        <el-menu-item v-if="item.children&&item.children.length==1&&!item.meta.hidden" :index="item.children[0].path" @click="goRoute">
             <template #title>
                 <el-icon><component :is="item.children[0].meta.icon"></component></el-icon>
             <span>{{ item.children[0].meta.title }}</span>    
@@ -31,12 +31,12 @@
 </template>
 
 <script setup lang="ts">
-
-
 defineProps(['menuList']);
+import { useRouter } from 'vue-router';
+const $router = useRouter();
 const goRoute = (vc:any) => {
-    console.log(vc);
     //vc.index 是点击跳转的路径
+     $router.push(vc.index)
 }
 </script>
 <script lang="ts">
