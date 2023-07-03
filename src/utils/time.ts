@@ -3,7 +3,6 @@ export const GET_TIME =() => {
     let message = "";
     //通过内置构造函数Date()
     let hours = new Date().getHours();
-    console.log(hours);
     if(hours<=5){
         message = '凌晨了，要注意休息哦'
     }else if(hours<=10){
@@ -15,7 +14,6 @@ export const GET_TIME =() => {
     }else{
         message = '晚上好，要早些休息哦'
     }
-    // console.log(message);
     return message;
     
 }

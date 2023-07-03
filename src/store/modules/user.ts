@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 //引入登录需要的参数类型
 import {loginForm,loginResponseData} from '@/api/user/type'
 //引入登录接口
-import { reqLogin } from '@/api/user'
+import { reqLogin,reqUserinfo } from '@/api/user'
 import {userState} from './types/type'
 //引入存储函数
 import { SET_TOKEN,GET_TOKEN } from '@/utils/token'
@@ -15,7 +15,10 @@ let useUserStore = defineStore('User', {
     state: ():userState => {
         return {
             token:GET_TOKEN(),//用户唯一标识token
-            menuRoutes:constantRoute//仓库存储数据生成菜单需要数组（路由）
+            menuRoutes:constantRoute,//仓库存储数据生成菜单需要数组（路由）
+            username:'',
+            avatar:''
+            
         }
     },
     actions:{
@@ -24,7 +27,6 @@ let useUserStore = defineStore('User', {
             // 登录请求：成功200-》token
             //登录请求：失败201-》错误信息
              let result:loginResponseData = await reqLogin(data);
-             console.log(result);
              if(result.code==200){
                 // pinia仓库存储一下token
                 this.token = (result.data.token as string);
@@ -35,7 +37,16 @@ let useUserStore = defineStore('User', {
              }else{
                return Promise.reject(new Error(result.data.message))
              }
-        }
+        },
+        // 获取用户信息的方法
+        async userInfo(){
+            let result = await reqUserinfo();
+            if(result.code==200){
+                this.username = result.data.checkUser.username;
+                this.avatar = result.data.checkUser.avatar
+            }
+        },
+
     },
     
     

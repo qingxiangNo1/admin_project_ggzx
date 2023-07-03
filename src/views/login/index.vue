@@ -70,9 +70,7 @@ const rules = {
 }
 //登录按钮回调
 const login  = async() => {
-    // console.log(loginForms.value);
     const result = loginForms.value.validate();
-    // console.log(result);
   try {
     //登录加载效果开始
     loading.value = true
@@ -86,7 +84,7 @@ const login  = async() => {
         title:'欢迎回来',
         message:`hi,${GET_TIME()}`
     })
-  } catch (error) {
+  } catch (error:any) {
     //登录加载效果结束
     loading.value = false
     //登录失败的提示信息

@@ -3,11 +3,11 @@
         <el-button size="default" circle icon="Refresh" @click="updateRefresh"></el-button>
         <el-button size="default" circle icon="FullScreen" @click="fullScreen"></el-button>
         <el-button size="default" circle icon="Setting"></el-button>
-        <img src="/jile2.jpeg" style="width: 28px; height: 28px; margin:0 10px;">
+        <img :src="userStore.avatar" style="width: 28px; height: 28px; margin:0 10px; border-radius: 50%;">
         <!-- 下拉退出登录 -->
         <el-dropdown>
             <span class="el-dropdown-link">
-                admin
+                {{ userStore.username }}
                 <el-icon class="el-icon--right">
                     <arrow-down />
                 </el-icon>
@@ -21,9 +21,10 @@
 </template>
 
 <script setup lang="ts">
-import useLayOutSettingStore from '@/store/modules/setting'
-//获取刷新的小仓库
+import useLayOutSettingStore from '@/store/modules/setting'  //获取刷新的小仓库
+import useUserStore from '@/store/modules/user'  //获取用户有关的小仓库
 let layoutSettingStore = useLayOutSettingStore()
+let userStore = useUserStore();
 //刷新按钮点击回调
 const updateRefresh = () => {
     layoutSettingStore.refresh = !layoutSettingStore.refresh;

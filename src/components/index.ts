@@ -1,7 +1,6 @@
 import SvgIcon from './SvgIcon/index.vue';
 import type { App, Component } from 'vue';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-// console.log(ElementPlusIconsVue);
 const components: { [name: string]: Component } = { SvgIcon };
 export default {
     install(app: App) {
