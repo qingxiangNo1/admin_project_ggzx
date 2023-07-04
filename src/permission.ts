@@ -28,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
             if (username) {
                 next();
             } else {
-                //用户在非home页刷新页面 失去username 重新调用接口
+                //用户刷新页面 失去username 重新调用接口
                 try {
                     await userStore.userInfo()
                     next();
