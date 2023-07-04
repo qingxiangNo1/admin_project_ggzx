@@ -28,6 +28,8 @@ app.use(globalComponent)
 //引入全局样式
 import '@/styles/index.scss'
 // 注册模板路由
+//引入路由鉴权文件
+import './permission'
 app.use(router)
 
 //将应用挂载到挂载点上
