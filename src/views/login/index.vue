@@ -25,14 +25,13 @@
 import { User,Lock } from '@element-plus/icons-vue';
 import { reactive,ref } from 'vue';
 import useUserStore from "@/store/modules/user";
-import {useRouter} from 'vue-router';
+import {useRouter,useRoute} from 'vue-router';//引入路由器和路由
 import { ElNotification } from 'element-plus';
-//引入获取当前时间的函数
-import {GET_TIME} from '@/utils/time';
+import {GET_TIME} from '@/utils/time';//引入获取当前时间的函数
 let useStore = useUserStore()
 let loading = ref(false)
-// 获取路由器
-let $router = useRouter()
+let $router = useRouter()// 获取路由器
+let $route = useRoute()//获取路由
 let loginForms = ref()
 //自定义校验规则
 const validatorUserName =(rule:any,value:any,callback:any) => {
@@ -70,14 +69,15 @@ const rules = {
 }
 //登录按钮回调
 const login  = async() => {
-    const result = loginForms.value.validate();
-  try {
+    await loginForms.value.validate();
     //登录加载效果开始
     loading.value = true
+  try {
     // 保证登陆成功
     await useStore.userLogin(loginForm);
+    let redirect:any = $route.query.redirect
     // 编程式导航跳转到数据首页
-    $router.push('/')
+    $router.push({path:redirect||'/'})
     // 登陆成功提示信息
     ElNotification  ({
         type:'success',

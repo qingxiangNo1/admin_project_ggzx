@@ -6,7 +6,7 @@ import {loginForm,loginResponseData} from '@/api/user/type'
 import { reqLogin,reqUserinfo } from '@/api/user'
 import {userState} from './types/type'
 //引入存储函数
-import { SET_TOKEN,GET_TOKEN } from '@/utils/token'
+import { SET_TOKEN,GET_TOKEN, REMOVE_TOKEN } from '@/utils/token'
 //引入路由（常量路由）
 import { constantRoute } from '@/router/routes'
 //创建用户小仓库
@@ -22,6 +22,7 @@ let useUserStore = defineStore('User', {
         }
     },
     actions:{
+        //处理异步||逻辑
         // 登录请求
         async userLogin(data:loginForm){
             // 登录请求：成功200-》token
@@ -45,6 +46,14 @@ let useUserStore = defineStore('User', {
                 this.username = result.data.checkUser.username;
                 this.avatar = result.data.checkUser.avatar
             }
+        },
+        // 用户退出登录方法
+        userLogout(){
+            //需要调用一个退出登录接口 ， 使用以下代替
+            this.token = ''
+            this.avatar = ''
+            this.username = ''
+            REMOVE_TOKEN();//移除本地token存储
         },
 
     },
