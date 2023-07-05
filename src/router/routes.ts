@@ -83,7 +83,7 @@ export const constantRoute = [
                 meta: {
                     title: '角色管理',
                     hidden: false,
-                    icon: 'Lock',
+                    icon: 'Avatar',
                 },
             },
             {
@@ -93,7 +93,7 @@ export const constantRoute = [
                 meta: {
                     title: '用户管理',
                     hidden: false,
-                    icon: 'Apple',
+                    icon: 'User',
                 },
             },
             {
@@ -103,7 +103,7 @@ export const constantRoute = [
                 meta: {
                     title: '菜单管理',
                     hidden: false,
-                    icon: 'Lock',
+                    icon: 'Grid',
                 },
             },
         ]
@@ -114,7 +114,7 @@ export const constantRoute = [
         name: 'Product',
         meta: {
             title: '商品管理',
-            icon: 'Goods',
+            icon: 'Shop',
             hidden: false,
         },
         redirect:'/product/trademark',
@@ -125,7 +125,7 @@ export const constantRoute = [
                 name: 'Trademark',
                 meta: {
                     title: '品牌管理',
-                    icon: 'Goods',
+                    icon: 'GoodsFilled',
                     hidden: false,
                 },
             },
@@ -135,7 +135,7 @@ export const constantRoute = [
                 name: 'Attr',
                 meta: {
                     title: '属性管理',
-                    icon: 'Goods',
+                    icon: 'Film',
                     hidden: false,
                 },
             },
@@ -145,7 +145,7 @@ export const constantRoute = [
                 name: 'Spu',
                 meta: {
                     title: 'Spu管理',
-                    icon: 'Goods',
+                    icon: 'ShoppingCart',
                     hidden: false,
                 },
             },
@@ -155,7 +155,7 @@ export const constantRoute = [
                 name: 'Sku',
                 meta: {
                     title: 'Sku管理',
-                    icon: 'Goods',
+                    icon: 'ShoppingBag',
                     hidden: false,
                 },
             },

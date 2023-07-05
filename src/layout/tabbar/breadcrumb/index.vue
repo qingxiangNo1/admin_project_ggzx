@@ -9,13 +9,12 @@
             <el-icon style="margin: 0 3px;">
                 <component :is="item.meta.icon"></component>
             </el-icon>
-            <span>{{ item.meta.title }}</span>
+            <span >{{ item.meta.title }}</span>
         </el-breadcrumb-item>
     </el-breadcrumb>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { useRoute } from 'vue-router'; //获取路由对象
 import useLayOutSettingStore from '@/store/modules/setting';
 //获取layout配置相关的仓库
@@ -30,4 +29,5 @@ export default {
     name: 'BreadCrumb'
 }
 </script>
-<style scoped></style>
+<style scoped>
+</style>

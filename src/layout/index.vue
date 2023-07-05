@@ -63,7 +63,7 @@ export default{
     position: fixed;
     width: calc(100% - $left-menu-width);
     height: $top-menu-height;
-    background: rgb(0, 153, 255);
+    background: rgb(88, 131, 160);
     left: $left-menu-width;
     top: 0px;
     transition: all 0.3s;
@@ -76,7 +76,7 @@ export default{
     position: absolute;
     width: calc(100% - $left-menu-width);
     height: calc(100vh - $top-menu-height);
-    background: rgb(41, 196, 235);
+    background: white;
     left: $left-menu-width;
     top: 50px;
     padding: 20px;
