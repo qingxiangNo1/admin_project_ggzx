@@ -3,7 +3,6 @@ import {defineConfig,loadEnv} from 'vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
-import { UserConfigExport, ConfigEnv } from 'vite'
 import path from 'path'
 export default defineConfig( ({command,mode}) => {
   let env = loadEnv(mode,process.cwd());  //获取各种环境下对应的变量
