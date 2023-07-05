@@ -16,8 +16,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import {reqHasTrademark} from '@/api/product/trademark'
+import { onMounted } from 'vue';
+onMounted(() => {
+    getHasTrademark()
+});
 let pageNo = ref(1);
 let limit = ref(3);
+const  getHasTrademark = async() => {
+   let result = await reqHasTrademark(pageNo.value,limit.value)
+   console.log(result);
+}
 </script>
 
 <style scoped></style>
