@@ -25,12 +25,12 @@
         <el-dialog v-model="dialogVisible" title="添加品牌" width="50%" draggable>
             <el-form :model="form" ref="form" :rules="rules" :inline="false" size="normal">
                 <el-form-item label="品牌名称" size="normal" label-width="80px">
-                    <el-input placeholder="请您输入品牌名称" size="normal" style="width: 80%;"></el-input>
+                    <el-input v-model="trademarkParms.tmName" placeholder="请您输入品牌名称" size="normal" style="width: 80%;"></el-input>
                 </el-form-item>
                 <el-form-item label="品牌LOGO" size="normal" label-width="80px">
-                    <el-upload class="avatar-uploader" action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                    <el-upload class="avatar-uploader" action="/api/admin/product/fileUpload"
                         :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-                        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+                        <img v-if="trademarkParms.logoUrl" :src="trademarkParms.logoUrl" class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon">
                             <Plus />
                         </el-icon>
@@ -49,10 +49,10 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue';
 import { reqHasTrademark } from '@/api/product/trademark'
-import { onMounted } from 'vue';
+import { onMounted,reactive,ref } from 'vue';
 import type { Records, TradeMarkResponseData } from '@/api/product/trademark/type'
+import { ElMessage } from 'element-plus';
 onMounted(() => {
     getHasTrademark()
 });
@@ -61,6 +61,10 @@ let limit = ref<number>(3);
 let total = ref<number>(0);
 let trademarkArr = ref<Records>([])
 let dialogVisible = ref<boolean>(false)
+let trademarkParms = reactive<any>({
+    tmName:'',
+    logoUrl:''
+})
 const getHasTrademark = async () => {
     let result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value)
     if (result.code == 200) {
@@ -77,6 +81,28 @@ const addTrademark = () => {
 }
 const updateTrademark = () => {
     dialogVisible.value = true
+}
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+ if(rawFile.type=='image/jpeg'||rawFile.type=='image/png'){
+    if(rawFile.size/1024/1024 < 4){
+           return true;
+    }else{
+        ElMessage({
+        type:'error',
+        message:'文件大小务必小于4M！'
+    })
+    return false;
+    }
+ }else{
+    ElMessage({
+        type:'error',
+        message:'请输入JPEG||PNG类型图片'
+    })
+    return false;
+ }
+}
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response,uploadFile) => {
+  trademarkParms.logoUrl = response.data;
 }
 </script>
 <style scoped>
