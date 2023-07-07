@@ -19,17 +19,15 @@
                 </el-table-column>
             </el-table>
             <el-pagination v-model:current-page="pageNo" v-model:page-size="limit" :page-sizes="[3, 4, 5, 6]"
-                background='true' layout=" prev, pager, next, jumper,->,sizes,total" :total="total" />
+                background='true' layout=" prev, pager, next, jumper,->,sizes,total" :total="total" @current-change="getHasTrademark" @size-change="sizeChange"/>
         </el-card>
     </div>
 </template>
-
 <script setup lang="ts">
 import { ref } from 'vue';
 import { reqHasTrademark } from '@/api/product/trademark'
 import { onMounted } from 'vue';
-import type {Records,TradeMarkResponseData} from '@/api/product/trademark/type'
-
+import type { Records, TradeMarkResponseData } from '@/api/product/trademark/type'
 onMounted(() => {
     getHasTrademark()
 });
@@ -38,12 +36,16 @@ let limit = ref<number>(3);
 let total = ref<number>(0);
 let trademarkArr = ref<Records>([])
 const getHasTrademark = async () => {
-    let result:TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value)
+    let result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value)
     if (result.code == 200) {
         trademarkArr.value = result.data.records;
         total.value = result.data.total;
     }
 }
+const sizeChange = () => {
+    pageNo.value = 1;
+    getHasTrademark();
+    
+}
 </script>
-
 <style scoped></style>

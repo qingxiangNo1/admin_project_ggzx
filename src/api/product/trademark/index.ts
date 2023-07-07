@@ -1,5 +1,5 @@
 import request from "@/utils/request";
-import {TradeMarkResponseData} from './type'
+import type {TradeMarkResponseData} from './type'
 enum API{
     TRADEMARK_URL='/admin/product/baseTrademark/',
 }
