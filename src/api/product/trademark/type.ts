@@ -6,7 +6,7 @@ export interface ResponseData {
 
 //已有的品牌的ts数据类型
 export interface TradeMark {
-  id: number
+  id?: number
   tmName: string
   logoUrl: string
 }
