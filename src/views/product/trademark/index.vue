@@ -12,17 +12,14 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="品牌操作">
-                    <template #='{row,index}'>
-<el-button type="primary" size="small" icon="Edit"></el-button>
-<el-button type="danger" size="small" icon="Delete"></el-button>
-
-
-
+                    <template #='{ row, index }'>
+                        <el-button type="primary" size="small" icon="Edit"></el-button>
+                        <el-button type="danger" size="small" icon="Delete"></el-button>
                     </template>
                 </el-table-column>
             </el-table>
             <el-pagination v-model:current-page="pageNo" v-model:page-size="limit" :page-sizes="[3, 4, 5, 6]"
-                background='true' layout=" prev, pager, next, jumper,->,sizes,total" :total="400" />
+                background='true' layout=" prev, pager, next, jumper,->,sizes,total" :total="total" />
         </el-card>
     </div>
 </template>
@@ -31,15 +28,17 @@
 import { ref } from 'vue';
 import { reqHasTrademark } from '@/api/product/trademark'
 import { onMounted } from 'vue';
+import type {Records,TradeMarkResponseData} from '@/api/product/trademark/type'
+
 onMounted(() => {
     getHasTrademark()
 });
-let pageNo = ref(1);
-let limit = ref(3);
-let total = ref(0);
-let trademarkArr = ref([])
+let pageNo = ref<number>(1);
+let limit = ref<number>(3);
+let total = ref<number>(0);
+let trademarkArr = ref<Records>([])
 const getHasTrademark = async () => {
-    let result = await reqHasTrademark(pageNo.value, limit.value)
+    let result:TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value)
     if (result.code == 200) {
         trademarkArr.value = result.data.records;
         total.value = result.data.total;
