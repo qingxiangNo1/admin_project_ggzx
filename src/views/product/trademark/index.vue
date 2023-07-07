@@ -13,7 +13,7 @@
                 </el-table-column>
                 <el-table-column label="品牌操作">
                     <template #='{ row, index }'>
-                        <el-button type="primary" size="small" icon="Edit" @click="updateTrademark"></el-button>
+                        <el-button type="primary" size="small" icon="Edit" @click="updateTrademark(row)"></el-button>
                         <el-button type="danger" size="small" icon="Delete"></el-button>
                     </template>
                 </el-table-column>
@@ -22,7 +22,7 @@
                 background='true' layout=" prev, pager, next, jumper,->,sizes,total" :total="total"
                 @current-change="getHasTrademark" @size-change="sizeChange" />
         </el-card>
-        <el-dialog v-model="dialogVisible" title="添加品牌" width="50%" draggable>
+        <el-dialog v-model="dialogVisible" :title="trademarkParms.id ? '修改品牌':'添加品牌'" width="50%" draggable>
             <el-form :model="form" ref="form" :rules="rules" :inline="false" size="normal">
                 <el-form-item label="品牌名称" size="normal" label-width="80px">
                     <el-input v-model="trademarkParms.tmName" placeholder="请您输入品牌名称" size="normal" style="width: 80%;"></el-input>
@@ -62,6 +62,7 @@ let total = ref<number>(0);
 let trademarkArr = ref<Records>([])
 let dialogVisible = ref<boolean>(false)
 let trademarkParms = reactive<TradeMark>({
+    id:0,
     tmName:'',
     logoUrl:''
 })
@@ -70,6 +71,7 @@ const getHasTrademark = async () => {
     if (result.code == 200) {
         trademarkArr.value = result.data.records;
         total.value = result.data.total;
+        console.log(result);
     }
 }
 const sizeChange = () => {
@@ -78,6 +80,7 @@ const sizeChange = () => {
 }
 const addTrademark = async() => {
     dialogVisible.value = true 
+    trademarkParms.id = 0
     trademarkParms.tmName = ''
     trademarkParms.logoUrl = ''
 }
@@ -87,13 +90,13 @@ const confirm = async() => {
         dialogVisible.value = false
         ElMessage({
             type:'success',
-            message:'添加品牌成功'
+            message:trademarkParms.id?'修改品牌成功':'添加品牌成功'
         })
         getHasTrademark()
     }else{
         ElMessage({
             type:'error',
-            message:'添加品牌失败'
+            message:trademarkParms.id?'修改品牌失败':'添加品牌失败'
         })
     }
 }
@@ -101,8 +104,12 @@ const cancel = () => {
     dialogVisible.value = false
 
 }
-const updateTrademark = () => {
+const updateTrademark = (row:any) => {
     dialogVisible.value = true
+    trademarkParms.logoUrl = row.logoUrl
+    trademarkParms.tmName = row.tmName
+    trademarkParms.id = row.id
+
 }
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
  if(rawFile.type=='image/jpeg'||rawFile.type=='image/png'){
