@@ -14,7 +14,12 @@
                 <el-table-column label="品牌操作">
                     <template #='{ row, index }'>
                         <el-button type="primary" size="small" icon="Edit" @click="updateTrademark(row)"></el-button>
-                        <el-button type="danger" size="small" icon="Delete"></el-button>
+                        <el-popconfirm :title="`你确定删除${row.tmName}吗？`" width="300px" icon="Delete" @confirm="deleteTrademark(row.id)">
+                            <template #reference>
+                                <el-button type="danger" size="small" icon="Delete"></el-button>
+                            </template>
+                        </el-popconfirm>
+
                     </template>
                 </el-table-column>
             </el-table>
@@ -22,14 +27,15 @@
                 background='true' layout=" prev, pager, next, jumper,->,sizes,total" :total="total"
                 @current-change="getHasTrademark" @size-change="sizeChange" />
         </el-card>
-        <el-dialog v-model="dialogVisible" :title="trademarkParms.id ? '修改品牌':'添加品牌'" width="50%" draggable>
+        <el-dialog v-model="dialogVisible" :title="trademarkParms.id ? '修改品牌' : '添加品牌'" width="50%" draggable>
             <el-form :model="form" ref="form" :rules="rules" :inline="false" size="normal">
                 <el-form-item label="品牌名称" size="normal" label-width="80px">
-                    <el-input v-model="trademarkParms.tmName" placeholder="请您输入品牌名称" size="normal" style="width: 80%;"></el-input>
+                    <el-input v-model="trademarkParms.tmName" placeholder="请您输入品牌名称" size="normal"
+                        style="width: 80%;"></el-input>
                 </el-form-item>
                 <el-form-item label="品牌LOGO" size="normal" label-width="80px">
-                    <el-upload class="avatar-uploader" action="/api/admin/product/fileUpload"
-                        :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                    <el-upload class="avatar-uploader" action="/api/admin/product/fileUpload" :show-file-list="false"
+                        :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
                         <img v-if="trademarkParms.logoUrl" :src="trademarkParms.logoUrl" class="avatar" />
                         <el-icon v-else class="avatar-uploader-icon">
                             <Plus />
@@ -49,9 +55,9 @@
     </div>
 </template>
 <script setup lang="ts">
-import { reqHasTrademark,reqAddOrUpdateTrademark } from '@/api/product/trademark'
-import { onMounted,reactive,ref } from 'vue';
-import type { Records, TradeMarkResponseData,TradeMark } from '@/api/product/trademark/type'
+import { reqHasTrademark, reqAddOrUpdateTrademark, reqDeleteTrademark } from '@/api/product/trademark'
+import { onMounted, reactive, ref } from 'vue';
+import type { Records, TradeMarkResponseData, TradeMark } from '@/api/product/trademark/type'
 import { ElMessage } from 'element-plus';
 onMounted(() => {
     getHasTrademark()
@@ -62,41 +68,41 @@ let total = ref<number>(0);
 let trademarkArr = ref<Records>([])
 let dialogVisible = ref<boolean>(false)
 let trademarkParms = reactive<TradeMark>({
-    id:0,
-    tmName:'',
-    logoUrl:''
+    id: 0,
+    tmName: '',
+    logoUrl: ''
 })
-const getHasTrademark = async () => {
+const getHasTrademark = async (pager = 1) => {
+    pageNo.value = pager
     let result: TradeMarkResponseData = await reqHasTrademark(pageNo.value, limit.value)
     if (result.code == 200) {
         trademarkArr.value = result.data.records;
         total.value = result.data.total;
-        console.log(result);
     }
 }
 const sizeChange = () => {
     pageNo.value = 1;
     getHasTrademark();
 }
-const addTrademark = async() => {
-    dialogVisible.value = true 
+const addTrademark = async () => {
+    dialogVisible.value = true
     trademarkParms.id = 0
     trademarkParms.tmName = ''
     trademarkParms.logoUrl = ''
 }
-const confirm = async() => {
-    let result:any = await reqAddOrUpdateTrademark(trademarkParms)
-    if(result.code==200){
+const confirm = async () => {
+    let result: any = await reqAddOrUpdateTrademark(trademarkParms)
+    if (result.code == 200) {
         dialogVisible.value = false
         ElMessage({
-            type:'success',
-            message:trademarkParms.id?'修改品牌成功':'添加品牌成功'
+            type: 'success',
+            message: trademarkParms.id ? '修改品牌成功' : '添加品牌成功'
         })
         getHasTrademark()
-    }else{
+    } else {
         ElMessage({
-            type:'error',
-            message:trademarkParms.id?'修改品牌失败':'添加品牌失败'
+            type: 'error',
+            message: trademarkParms.id ? '修改品牌失败' : '添加品牌失败'
         })
     }
 }
@@ -104,63 +110,82 @@ const cancel = () => {
     dialogVisible.value = false
 
 }
-const updateTrademark = (row:any) => {
+const updateTrademark = (row: any) => {
     dialogVisible.value = true
     trademarkParms.logoUrl = row.logoUrl
     trademarkParms.tmName = row.tmName
     trademarkParms.id = row.id
 
 }
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
- if(rawFile.type=='image/jpeg'||rawFile.type=='image/png'){
-    if(rawFile.size/1024/1024 < 4){
-           return true;
+const deleteTrademark = async(id:number) => { 
+    let result:any = await reqDeleteTrademark(id)
+    if(result.code==200){
+          ElMessage({
+            type:'success',
+            message:'删除成功'
+          })
+            getHasTrademark(trademarkArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
     }else{
         ElMessage({
-        type:'error',
-        message:'文件大小务必小于4M！'
-    })
-    return false;
+            type:'error',
+            message:'删除失败'
+          })
     }
- }else{
-    ElMessage({
-        type:'error',
-        message:'请输入JPEG||PNG类型图片'
-    })
-    return false;
- }
+
 }
-const handleAvatarSuccess: UploadProps['onSuccess'] = (response,uploadFile) => {
-  trademarkParms.logoUrl = response.data;
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+    if (rawFile.type == 'image/jpeg' || rawFile.type == 'image/png') {
+        if (rawFile.size / 1024 / 1024 < 4) {
+            return true;
+        } else {
+            ElMessage({
+                type: 'error',
+                message: '文件大小务必小于4M！'
+            })
+            return false;
+        }
+    } else {
+        ElMessage({
+            type: 'error',
+            message: '请输入JPEG||PNG类型图片'
+        })
+        return false;
+    }
+}
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+    trademarkParms.logoUrl = response.data;
 }
 </script>
 <style scoped>
 .avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
-  display: block;
+    width: 178px;
+    height: 178px;
+    display: block;
 }
 </style>
 
 <style>
 .avatar-uploader .el-upload {
-  border: 1px dashed var(--el-border-color);
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: var(--el-transition-duration-fast);
+    border: 1px dashed var(--el-border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: var(--el-transition-duration-fast);
 }
 
 .avatar-uploader .el-upload:hover {
-  border-color: var(--el-color-primary);
+    border-color: var(--el-color-primary);
 }
 
 .el-icon.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    text-align: center;
+
+    background: url(../../../../public/jile1.jpg);
+    background-size: contain;
 }
 </style>
