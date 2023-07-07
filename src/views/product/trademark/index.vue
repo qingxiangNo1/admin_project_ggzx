@@ -39,8 +39,8 @@
             </el-form>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="dialogVisible = false">
+                    <el-button @click="cancel">取消</el-button>
+                    <el-button type="primary" @click="confirm">
                         确认
                     </el-button>
                 </span>
@@ -49,9 +49,9 @@
     </div>
 </template>
 <script setup lang="ts">
-import { reqHasTrademark } from '@/api/product/trademark'
+import { reqHasTrademark,reqAddOrUpdateTrademark } from '@/api/product/trademark'
 import { onMounted,reactive,ref } from 'vue';
-import type { Records, TradeMarkResponseData } from '@/api/product/trademark/type'
+import type { Records, TradeMarkResponseData,TradeMark } from '@/api/product/trademark/type'
 import { ElMessage } from 'element-plus';
 onMounted(() => {
     getHasTrademark()
@@ -61,7 +61,7 @@ let limit = ref<number>(3);
 let total = ref<number>(0);
 let trademarkArr = ref<Records>([])
 let dialogVisible = ref<boolean>(false)
-let trademarkParms = reactive<any>({
+let trademarkParms = reactive<TradeMark>({
     tmName:'',
     logoUrl:''
 })
@@ -76,8 +76,30 @@ const sizeChange = () => {
     pageNo.value = 1;
     getHasTrademark();
 }
-const addTrademark = () => {
-    dialogVisible.value = true
+const addTrademark = async() => {
+    dialogVisible.value = true 
+    trademarkParms.tmName = ''
+    trademarkParms.logoUrl = ''
+}
+const confirm = async() => {
+    let result:any = await reqAddOrUpdateTrademark(trademarkParms)
+    if(result.code==200){
+        dialogVisible.value = false
+        ElMessage({
+            type:'success',
+            message:'添加品牌成功'
+        })
+        getHasTrademark()
+    }else{
+        ElMessage({
+            type:'error',
+            message:'添加品牌失败'
+        })
+    }
+}
+const cancel = () => {
+    dialogVisible.value = false
+
 }
 const updateTrademark = () => {
     dialogVisible.value = true
