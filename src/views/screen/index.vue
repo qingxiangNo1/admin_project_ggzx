@@ -4,10 +4,12 @@
             <div class="top">
                 <Top></Top>
             </div>
+            <div class="floor">首页</div>
             <div class="bottom">
                 <div class="left">我是left</div>
                 <div class="center">我是center</div>
                 <div class="right">我是right</div>
+                
             </div>
         </div>
     </div>
@@ -37,7 +39,7 @@ window.onresize = () => {
 .container {
     width: 100vw;
     height: 100vh;
-    background: url(./images/bg.png) no-repeat;
+    background: url(./images/dengru.png) no-repeat;
     background-size: cover;
 
     .screen {
@@ -110,5 +112,15 @@ window.onresize = () => {
                 }
             }
         }
+        
     }
+    .floor{
+            width: 100%;
+            height: 40px;
+            margin-top: 1000px;
+            text-align: center;
+            color: cyan;
+            font-size: 20px;
+
+        }
 }</style>

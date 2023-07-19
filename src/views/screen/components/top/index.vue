@@ -1,14 +1,16 @@
 <template>
     <div class="top">
         <div class="left">
-            <span class="lbtn" @click="goHome">首页</span>
+            <span class="llbtn" @click="goHome">条令构建</span>
+            <span class="lrbtn" @click="goHome">条令应用</span>
         </div>
         <div class="center">
-            <div class="title">可视化大数据平台</div>
+            <div class="title"></div>
         </div>
         <div class="right">
-            <span class="rbtn">统计报告</span>
-            <span class="time">当前时间:{{ time }}</span>
+            <span class="rlbtn">条令管理</span>
+            <span class="rrbtn" @click="goHome">体系构建</span>
+            <!-- <span class="time">当前时间:{{ time }}</span> -->
         </div>
     </div>
 </template>
@@ -37,19 +39,32 @@ onMounted(() => {
 <style scoped lang="scss">
 .top {
     width: 100%;
-    height: 40px;
+    height: 70px;
     display: flex;
 
     .left {
-        flex: 1.5;
-        background: url(../../images/dataScreen-header-left-bg.png) no-repeat;
-        background-size: cover;
-
-        .lbtn {
+        flex: 1;
+        // background: url(../../images/dataScreen-header-left-bg.png) no-repeat;
+        // background-size: cover;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .llbtn {
             width: 150px;
             height: 40px;
-            background: url(../../images/dataScreen-header-btn-bg-l.png) no-repeat;
-            background-size: cover;
+            background: url(../../images/tiaolingguanli.png) no-repeat;
+            background-size: 100% 100%;
+            float: right;
+            text-align: center;
+            line-height: 40px;
+            color: #29fcff;
+            font-size: 20px;
+        }
+        .lrbtn {
+            width: 150px;
+            height: 40px;
+            background: url(../../images/tiaolingguanli.png) no-repeat;
+            background-size: 100% 100%;
             float: right;
             text-align: center;
             line-height: 40px;
@@ -59,18 +74,31 @@ onMounted(() => {
     }
 
     .right {
-        flex: 1.5;
-        background: url(../../images/dataScreen-header-left-bg.png) no-repeat;
-        background-size: cover;
+        flex: 1;
+        // background: url(../../images/dataScreen-header-left-bg.png) no-repeat;
+        // background-size: cover;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        .rbtn{
-            background:url(../../images/dataScreen-header-btn-bg-r.png) no-repeat;
-            background-size: cover;
+        .rlbtn{
+            background:url(../../images/tiaolingguanli.png) no-repeat;
+            background-size: 100% 100%;
             float: left;
             width: 150px;
             height: 40px;
+            top:30px;
+            text-align: center;
+            color: #29fcff;
+            line-height: 40px;
+            font-size: 20px;
+        }
+        .rrbtn{
+            background:url(../../images/tiaolingguanli.png) no-repeat;
+            background-size: 100% 100%;
+            float: left;
+            width: 150px;
+            height: 40px;
+            top:30px;
             text-align: center;
             color: #29fcff;
             line-height: 40px;
@@ -87,11 +115,11 @@ onMounted(() => {
     }
 
     .center {
-        flex: 2;
+        flex: 3;
         .title {
             width: 100%;
             height: 74px;
-            background: url(../../images/dataScreen-header-center-bg.png) no-repeat;
+            background: url(../../images/biaoti.png) no-repeat;
             background-size: 100% 100%;
             text-align: center;
             line-height: 74px;
