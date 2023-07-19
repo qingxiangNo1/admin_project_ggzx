@@ -4,7 +4,7 @@ import type { CategoryResponseData } from '@/api/product/attr/type'
 import type { CategoryState } from './types/type'
 
 const useCategoryStore = defineStore('Category', {
-    state: ():CategoryState => {
+    state: (): CategoryState => {
         return {
             //存储一级分类的数据
             c1Arr: [],
@@ -20,20 +20,33 @@ const useCategoryStore = defineStore('Category', {
             c3Id: '',
         }
 
-    
-},
+
+    },
     actions: {
         async getC1() {
             //发请求获取一级分类的数据
             const result: CategoryResponseData = await reqC1()
-            console.log(result);
             if (result.code == 200) {
-              this.c1Arr = result.data
+                this.c1Arr = result.data
             }
-          },
-},
+        },
+        async getC2() {
+            //发请求获取二级分类的数据
+            const result: CategoryResponseData = await reqC2(this.c1Id)
+            if (result.code == 200) {
+                this.c2Arr = result.data
+            }
+        },
+        async getC3() {
+            //发请求获取三级分类的数据
+            const result: CategoryResponseData = await reqC3(this.c2Id)
+            if (result.code == 200) {
+                this.c3Arr = result.data
+            }
+        },
+    },
     getters: {}
-    
+
 })
 
 export default useCategoryStore
