@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-form ref="form" label-width="80px" :inline="true" size="normal">
+        <el-form ref="form" label-width="80px" :inline="true" size="normal" :disabled="scene==1?true:false">
             <el-form-item label="一级分类" size="normal">
                 <el-select v-model="categoryStore.c1Id" @change="handler1">
                     <el-option v-for="(c1, index) in categoryStore.c1Arr" :key="c1.id" :label="c1.name" :value="c1.id"> </el-option>
@@ -24,6 +24,7 @@
 <script setup lang="ts">
 import {onMounted,ref} from 'vue'
 import useCategoryStore from '@/store/modules/category'
+defineProps(['scene'])
 let categoryStore = useCategoryStore()
  onMounted(() => {
     getC1(); })
