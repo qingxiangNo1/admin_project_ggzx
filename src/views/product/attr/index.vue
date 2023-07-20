@@ -19,7 +19,7 @@
                     </el-table-column>
                     <el-table-column label="操作" width="200px" align="center">
                         <template #='{ row, $index }'>
-                            <el-button type="success" size="small" icon="Edit"></el-button>
+                            <el-button type="success" size="small" icon="Edit" @click="updateAttr(row)"></el-button>
                             <el-button type="danger" size="small" icon="Delete"></el-button>
 
                         </template>
@@ -93,6 +93,11 @@ const getAttr = async () => {
         attrArr.value = result.data
 
     }
+}
+const updateAttr = (row:Attr) => {
+    scene.value = 1
+    console.log(row);
+    Object.assign(attrParams,JSON.parse(JSON.stringify(row)))
 }
 const addVaule = () => {
     Object.assign(attrParams, {
