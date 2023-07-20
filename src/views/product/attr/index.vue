@@ -41,15 +41,21 @@
                     </el-table-column>
                     <el-table-column label="属性值" align="center">
                         <template #='{ row, $index }'>
-                            <el-input v-if="row.flag" v-model="row.valueName" @blur="toLook(row, $index)"
-                                placeholder="请输入属性值" size="small" @keyup.enter.native="toLook(row, $index)"></el-input>
+                            <el-input :ref="(vc: any) => inputArr[$index] = vc" v-if="row.flag" v-model="row.valueName"
+                                @blur="toLook(row, $index)" placeholder="请输入属性值" size="small"
+                                @keyup.enter.native="toLook(row, $index)"></el-input>
                             <div v-else @click="toEdit(row, $index)">{{ row.valueName }}</div>
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center">
+                        <template #='{ row, $index }'>
+                          <el-button type="danger" size="small" icon="Delete" @click="attrParams.attrValueList.splice($index,1)"></el-button>
+
+                        </template>
                     </el-table-column>
                 </el-table>
-                <el-button type="primary" size="default" @click="save" :disabled="attrParams.attrValueList.length>0?false:true">保存</el-button>
+                <el-button type="primary" size="default" @click="save"
+                    :disabled="attrParams.attrValueList.length > 0 ? false : true">保存</el-button>
                 <el-button type="primary" size="default" @click="cancel1">取消</el-button>
             </div>
         </el-card>
@@ -57,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { watch, ref, reactive } from 'vue'
+import { watch, ref, reactive, nextTick } from 'vue'
 import Category from '@/components/Category/index.vue'
 import useCategoryStore from '@/store/modules/category';
 import { reqAttr, reqAddOrUpdateAttr } from '@/api/product/attr'
@@ -74,6 +80,8 @@ let attrParams = reactive<Attr>({
     categoryId: '',//三级分类的ID
     categoryLevel: 3,//代表的是三级分类
 })
+//准备一个数组:将来存储对应的组件实例el-input
+let inputArr = ref<any>([]);
 watch(() => categoryStore.c3Id, () => {
     getAttr();
 })
@@ -104,6 +112,11 @@ const addAttrValue = () => {
         valueName: '',
         flag: true,
     })
+    //获取最后el-input组件聚焦
+    nextTick(() => {
+        inputArr.value[attrParams.attrValueList.length - 1].focus();
+    })
+
 }
 const save = async () => {
     let result: any = await reqAddOrUpdateAttr(attrParams)
@@ -136,10 +149,10 @@ const toLook = (row: AttrValue, $index: number) => {
             return item.valueName === row.valueName
         }
     })
-    if(repeat){
+    if (repeat) {
         ElMessage({
-            type:'error',
-            message:'属性值不能重复',
+            type: 'error',
+            message: '属性值不能重复',
         })
         return
     }
@@ -148,6 +161,10 @@ const toLook = (row: AttrValue, $index: number) => {
 }
 const toEdit = (row: AttrValue, $index: number) => {
     row.flag = true
+    //nextTick:响应式数据发生变化,获取更新的DOM(组件实例)
+    nextTick(() => {
+        inputArr.value[$index].focus();
+    })
 }
 </script>
 
