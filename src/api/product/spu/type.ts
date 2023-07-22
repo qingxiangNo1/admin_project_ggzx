@@ -3,7 +3,7 @@ export interface ResponseData {
     message: string,
     ok: boolean
 }
-export interface SpuDate {
+export interface SpuData {
     id?: number,
     createTime: string,
     updateTime: string,
@@ -15,7 +15,7 @@ export interface SpuDate {
     spuImageList: null,
     spuPosterList: null
 }
-export type Records = SpuDate[]
+export type Records = SpuData[]
 export interface HasResponseDate extends ResponseData {
     data: {
         records: Records,
