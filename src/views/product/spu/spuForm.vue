@@ -10,22 +10,19 @@
                         {{ item.tmName }}
                     </el-option>
                 </el-select>
-
             </el-form-item>
             <el-form-item label="SPU描述">
-                <el-input type="textarea" placeholder="请你输入描述"></el-input>
+                <el-input type="textarea" placeholder="请你输入描述" v-model="SpuParams.description"></el-input>
             </el-form-item>
             <el-form-item label="spu照片">
-                <el-upload v-model:file-list="fileList"
-                    action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15" list-type="picture-card"
-                    :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+                <el-upload v-model:file-list="imageList" action="/api/admin/product/fileUpload" list-type="picture-card"
+                    :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :before-upload="handlerUpload">
                     <el-icon>
                         <Plus />
                     </el-icon>
                 </el-upload>
-
                 <el-dialog v-model="dialogVisible">
-                    <img w-full :src="dialogImageUrl" alt="Preview Image" />
+                    <img w-full :src="dialogImageUrl" alt="Preview Image" style="width: 100%;height: 100%;" />
                 </el-dialog>
             </el-form-item>
             <el-form-item label="spu销售属性">
@@ -65,6 +62,7 @@
 import { ref } from 'vue'
 import { reqAllTradeMark, reqSpuImageList, reqSpuHasSaleAttr, reqAllSaleAttr } from '@/api/product/spu/index.ts'
 import type { Trademark, SpuImg, SaleAttr, HasSaleAttr, SpuData } from '@/api/product/spu/type'
+import { ElMessage } from 'element-plus'
 let $emit = defineEmits(['changeScene'])
 let allTrademark = ref<Trademark[]>([])
 let imageList = ref<SpuImg[]>([])
@@ -78,6 +76,8 @@ let SpuParams = ref<SpuData>({
     spuImageList: [],
     spuSaleAttrList: [],
 });
+let dialogVisible = ref<boolean>(false)
+let dialogImageUrl = ref<string>('')
 const cancel = () => {
     $emit('changeScene', 0)
 }
@@ -91,6 +91,37 @@ const initHasSpuData = async (row: any) => {
     imageList.value = result1.data
     saleAttr.value = result2.data
     allSaleAttr.value = result3.data
+    imageList.value = result1.data.map(item => {
+        return {
+            name: item.imgName,
+            url: item.imgUrl
+        }
+    })
+}
+const handlePictureCardPreview = (file: any) => {
+    dialogVisible.value = true
+    dialogImageUrl.value = file.url
+}
+const handleRemove = () => { }
+const handlerUpload = (file: any) => {
+    if (file.type == 'image/jpeg') {
+        if (file.size / 1024 / 1024 < 3) {
+            return true
+        }
+        else {
+            ElMessage({
+                type: 'error',
+                message: '上传大小不能大于3M'
+            })
+            return false
+        }
+    } else {
+        ElMessage({
+            type: 'error',
+            message: '请上传image/jpeg类型'
+        })
+        return false
+    }
 }
 defineExpose({ initHasSpuData })
 </script>
