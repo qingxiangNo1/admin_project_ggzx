@@ -2,15 +2,12 @@
     <div>
         <el-form label-width="100px">
             <el-form-item label="spu名称">
-                <el-input placeholder="请你输入spu名称" size="normal"></el-input>
+                <el-input placeholder="请你输入spu名称" size="normal" v-model="SpuParams.spuName"></el-input>
             </el-form-item>
             <el-form-item label="spu品牌">
-                <el-select placeholder="请你选择品牌">
-                    <el-option>
-                        哈哈
-                    </el-option>
-                    <el-option>
-                        嘿嘿
+                <el-select placeholder="请你选择品牌" v-model="SpuParams.tmId">
+                    <el-option v-for="(item, index) in allTrademark" :key="index" :value="item.id" :label="item.tmName">
+                        {{ item.tmName }}
                     </el-option>
                 </el-select>
 
@@ -36,7 +33,7 @@
                     <el-option>1</el-option>
                     <el-option>2</el-option>
                     <el-option>3</el-option>
-                    
+
                 </el-select>
                 <el-button type="primary" size="default" @click="" icon="Plus">添加销售属性</el-button>
                 <el-table border style="margin: 10px 0px;">
@@ -48,12 +45,12 @@
                     <el-table-column label="属性值" align="center">
                     </el-table-column>
                     <el-table-column label="操作">
-                        <template #='{row,$index}'>
-                        <el-button type="primary" size="small" @click=""></el-button>
-                        
+                        <template #='{ row, $index }'>
+                            <el-button type="primary" size="small" @click=""></el-button>
+
                         </template>
                     </el-table-column>
-                    
+
                 </el-table>
                 <el-button type="primary" size="default" @click="">确定</el-button>
                 <el-button type="primary" size="default" @click="cancel">取消</el-button>
@@ -66,27 +63,36 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import {reqAllTradeMark,reqSpuImageList,reqSpuHasSaleAttr,reqAllSaleAttr} from '@/api/product/spu/index.ts'
-import type {Trademark,SpuImg,SaleAttr,HasSaleAttr} from '@/api/product/spu/type'
-let $emit =  defineEmits(['changeScene'])
+import { reqAllTradeMark, reqSpuImageList, reqSpuHasSaleAttr, reqAllSaleAttr } from '@/api/product/spu/index.ts'
+import type { Trademark, SpuImg, SaleAttr, HasSaleAttr, SpuData } from '@/api/product/spu/type'
+let $emit = defineEmits(['changeScene'])
 let allTrademark = ref<Trademark[]>([])
 let imageList = ref<SpuImg[]>([])
 let saleAttr = ref<SaleAttr[]>([])
 let allSaleAttr = ref<HasSaleAttr[]>([])
+let SpuParams = ref<SpuData>({
+    category3Id: "",//收集三级分类的ID
+    spuName: "",//SPU的名字
+    description: "",//SPU的描述
+    tmId: '',//品牌的ID
+    spuImageList: [],
+    spuSaleAttrList: [],
+});
 const cancel = () => {
-    $emit('changeScene',0)
+    $emit('changeScene', 0)
 }
-const initHasSpuData = async(row:any) => {
-   let result = await reqAllTradeMark()
-   let result2 = await reqSpuHasSaleAttr(row.id)
-   let result1 = await reqSpuImageList(row.id)
-   let result3 = await reqAllSaleAttr()
-   allTrademark.value = result.data
-   imageList.value = result1.data
-   saleAttr.value = result2.data
-   allSaleAttr.value = result3.data
+const initHasSpuData = async (row: any) => {
+    SpuParams.value = row
+    let result = await reqAllTradeMark()
+    let result2 = await reqSpuHasSaleAttr(row.id)
+    let result1 = await reqSpuImageList(row.id)
+    let result3 = await reqAllSaleAttr()
+    allTrademark.value = result.data
+    imageList.value = result1.data
+    saleAttr.value = result2.data
+    allSaleAttr.value = result3.data
 }
-defineExpose({initHasSpuData})
+defineExpose({ initHasSpuData })
 </script>
 
 <style scoped></style>

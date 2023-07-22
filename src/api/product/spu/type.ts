@@ -3,17 +3,15 @@ export interface ResponseData {
     message: string,
     ok: boolean
 }
+//SPU数据的ts类型:需要修改
 export interface SpuData {
-    id?: number,
-    createTime: string,
-    updateTime: string,
-    spuName: string,
-    description: string,
-    category3Id: number,
-    tmId: number,
-    spuSaleAttrList: null,
-    spuImageList: null,
-    spuPosterList: null
+  category3Id: string | number
+  id?: number
+  spuName: string
+  tmId: number | string
+  description: string
+  spuImageList: null | SpuImg[]
+  spuSaleAttrList: null | SaleAttr[]
 }
 export type Records = SpuData[]
 export interface HasResponseDate extends ResponseData {
