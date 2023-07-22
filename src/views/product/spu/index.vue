@@ -15,7 +15,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template #='{ row, $index }'>
-                    <el-button type="primary" size="small" @click="" icon="Edit" title="编辑spu">
+                    <el-button type="primary" size="small" @click="edit(row)" icon="Edit" title="编辑spu">
                     </el-button>
                     <el-button type="primary" size="small" @click="" icon="Plus" title="添加sku">
                     </el-button><el-button type="primary" size="small" @click="" icon="View" title="查看spu">
@@ -28,7 +28,7 @@
             :background="true" layout="prev, pager, next, jumper,->,total, sizes" :total="total"
             @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </div>
-        <SpuForm v-show="scene==1" @changeScene="changeScene"></SpuForm>
+        <SpuForm v-show="scene==1" @changeScene="changeScene" ref="spu"></SpuForm>
         <SkuForm v-show="scene==2" @changeScene="changeScene"></SkuForm>
     </el-card>
 </template>
@@ -42,9 +42,10 @@ import type { HasResponseDate, Records } from '@/api/product/spu/type'
 import SpuForm from './spuForm.vue'
 import SkuForm from './skuForm.vue'
 let categoryStore = useCategoryStore()
-let scene = ref(1)
+let scene = ref(0)
 let pageNo = ref(1)
 let pageSize = ref(3)
+let spu = ref()
 let records = ref<Records>([])
 let total = ref<number>(0)
 watch(() =>
@@ -66,9 +67,14 @@ const handleCurrentChange = () => {
 const handleSizeChange = () => {
     getHasSpu() 
 }
+const edit = (row:any) => {
+    scene.value = 1
+    spu.value.initHasSpuData(row)
+}
 const changeScene = (obj:any) => {
     scene.value = obj
 }
+
 </script>
 
 <style scoped></style>
