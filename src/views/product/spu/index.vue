@@ -3,7 +3,8 @@
         <Category :scene="scene"></Category>
     </el-card>
     <el-card style="margin: 10px 0px;">
-        <el-button type="primary" size="default" icon="Plus" @click=""
+        <div v-show="scene==0">
+            <el-button type="primary" size="default" icon="Plus" @click=""
             :disabled="categoryStore.c3Id ? false : true">添加SPU</el-button>
         <el-table border style="margin: 10px 0px;" :data="records">
             <el-table-column type="index" label="序号" width="80px" align="center">
@@ -26,6 +27,9 @@
         <el-pagination v-model:current-page="pageNo" v-model:page-size="pageSize" :page-sizes="[3, 5, 7, 9]"
             :background="true" layout="prev, pager, next, jumper,->,total, sizes" :total="total"
             @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        </div>
+        <SpuForm v-show="scene==1" @changeScene="changeScene"></SpuForm>
+        <SkuForm v-show="scene==2" @changeScene="changeScene"></SkuForm>
     </el-card>
 </template>
 
@@ -35,8 +39,10 @@ import Category from '@/components/Category/index.vue'
 import useCategoryStore from '@/store/modules/category'
 import { reqHasSpu } from '@/api/product/spu'
 import type { HasResponseDate, Records } from '@/api/product/spu/type'
+import SpuForm from './spuForm.vue'
+import SkuForm from './skuForm.vue'
 let categoryStore = useCategoryStore()
-let scene = ref(0)
+let scene = ref(1)
 let pageNo = ref(1)
 let pageSize = ref(3)
 let records = ref<Records>([])
@@ -53,13 +59,15 @@ const getHasSpu = async () => {
         records.value = result.data.records
         total.value = result.data.total
     }
-    console.log(result);
 }  
 const handleCurrentChange = () => {
     getHasSpu()
 } 
 const handleSizeChange = () => {
     getHasSpu() 
+}
+const changeScene = (obj:any) => {
+    scene.value = obj
 }
 </script>
 
