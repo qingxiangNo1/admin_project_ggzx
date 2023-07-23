@@ -26,25 +26,27 @@
                 </el-dialog>
             </el-form-item>
             <el-form-item label="spu销售属性">
-                <el-select placeholder="还有3未选择">
-                    <el-option>1</el-option>
-                    <el-option>2</el-option>
-                    <el-option>3</el-option>
-
+                <el-select placeholder="还有未选择">
+                    <el-option v-for="(item, index) in allSaleAttr" :key="index">{{ item.name }}</el-option>
                 </el-select>
                 <el-button type="primary" size="default" @click="" icon="Plus">添加销售属性</el-button>
-                <el-table border style="margin: 10px 0px;">
-                    <el-table-column label="序号" width="80px" type="index">
-
+                <el-table border style="margin: 10px 0px;" :data="saleAttr">
+                    <el-table-column label="序号" width="80px" type="index" align="center">
                     </el-table-column>
-                    <el-table-column label="属性名" align="center">
+                    <el-table-column label="属性名" align="center" prop="saleAttrName">
                     </el-table-column>
                     <el-table-column label="属性值" align="center">
-                    </el-table-column>
-                    <el-table-column label="操作">
                         <template #='{ row, $index }'>
-                            <el-button type="primary" size="small" @click=""></el-button>
-
+                            <el-tag style="margin: 0px 5px;" v-for="(item, index) in row.spuSaleAttrValueList"
+                                :key="item.id" class="mx-1" closable type="success">
+                                {{ item.saleAttrValueName }}
+                            </el-tag>
+                            <el-button type="primary" size="small" icon="Plus" @click=""></el-button>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" align="center">
+                        <template #='{ row, $index }'>
+                            <el-button type="primary" size="small" @click="saleAttr.splice($index,1)" icon="Delete"></el-button>
                         </template>
                     </el-table-column>
 
