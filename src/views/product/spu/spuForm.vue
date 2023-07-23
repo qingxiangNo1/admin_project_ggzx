@@ -68,9 +68,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { reqAllTradeMark, reqSpuImageList, reqSpuHasSaleAttr, reqAllSaleAttr,reqAddOrUpdateSpu } from '@/api/product/spu/index.ts'
+import { reqAllTradeMark, reqSpuImageList, reqSpuHasSaleAttr, reqAllSaleAttr, reqAddOrUpdateSpu } from '@/api/product/spu/index.ts'
 import type { Trademark, SpuImg, SaleAttr, HasSaleAttr, SpuData, SaleAttrValue } from '@/api/product/spu/type'
 import { ElMessage } from 'element-plus'
+import useCategoryStore from '@/store/modules/category'
+let categoryStore = useCategoryStore()
 //将来收集还未选择的销售属性的ID与属性值的名字
 let saleAttrIdAndValueName = ref<string>('')
 let $emit = defineEmits(['changeScene'])
@@ -89,7 +91,7 @@ let SpuParams = ref<SpuData>({
 let dialogVisible = ref<boolean>(false)
 let dialogImageUrl = ref<string>('')
 const cancel = () => {
-    $emit('changeScene', 0)
+    $emit('changeScene', {flag:0,params:SpuParams.value.id?'update':'add'})
 }
 const initHasSpuData = async (row: any) => {
     SpuParams.value = row
@@ -207,8 +209,8 @@ const toLook = (row: SaleAttr) => {
     //切换为查看模式
     row.flag = false;
 }
-const save = async() => {
-    SpuParams.value.spuImageList = imageList.value.map((item:any) => {
+const save = async () => {
+    SpuParams.value.spuImageList = imageList.value.map((item: any) => {
         return {
             imgName: item.name,
             imgUrl: (item.response && item.response.data) || item.url
@@ -216,22 +218,42 @@ const save = async() => {
     })
     SpuParams.value.spuSaleAttrList = saleAttr.value
     let result = await reqAddOrUpdateSpu(SpuParams.value)
-    if(result.code == 200){
+    if (result.code == 200) {
         ElMessage({
-            type:'success',
-            message:SpuParams.value.id?'修改成功':'上传成功'
+            type: 'success',
+            message: SpuParams.value.id ? '修改成功' : '上传成功'
         })
-        $emit('changeScene', 0)
-    }else{
+        $emit('changeScene', {flag:0,params:SpuParams.value.id?'update':'add'})
+    } else {
         ElMessage({
-            type:'error',
-            message:SpuParams.value.id?'修改失败':'上传失败'
+            type: 'error',
+            message: SpuParams.value.id ? '修改失败' : '上传失败'
         })
-        $emit('changeScene', 0)
+        $emit('changeScene', {flag:0,params:SpuParams.value.id?'update':'add'})
+
     }
 
 }
-defineExpose({ initHasSpuData })
+const initAddSpu = async () => {
+    Object.assign(SpuParams.value, {
+        category3Id: "",//收集三级分类的ID
+        spuName: "",//SPU的名字
+        description: "",//SPU的描述
+        tmId: '',//品牌的ID
+        spuImageList: [],
+        spuSaleAttrList: [],
+    })
+    imageList.value = []
+    saleAttr.value = []
+    saleAttrIdAndValueName.value = ''
+    let result = await reqAllTradeMark()
+    let result1 = await reqAllSaleAttr()
+    SpuParams.value.category3Id = categoryStore.c3Id
+    allTrademark.value = result.data
+    allSaleAttr.value = result1.data
+
+}
+defineExpose({ initHasSpuData, initAddSpu })
 </script>
 
 <style scoped></style>
