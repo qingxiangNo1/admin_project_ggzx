@@ -73,6 +73,7 @@ const edit = (row:any) => {
 }
 const changeScene = (obj:any) => {
     scene.value = obj
+    getHasSpu()
 }
 
 </script>
