@@ -21,7 +21,7 @@
                     <template #='{ row, $index }'>
                         <el-button type="primary" size="small" @click="edit(row)" icon="Edit" title="编辑spu">
                         </el-button>
-                        <el-button type="primary" size="small" @click="" icon="Plus" title="添加sku">
+                        <el-button type="primary" size="small" @click="addSku" icon="Plus" title="添加sku">
                         </el-button><el-button type="primary" size="small" @click="" icon="View" title="查看spu">
                         </el-button><el-button type="primary" size="small" @click="" icon="Delete" title="删除spu">
                         </el-button>
@@ -50,9 +50,9 @@ import type { HasResponseDate, Records } from '@/api/product/spu/type'
 import SpuForm from './spuForm.vue'
 import SkuForm from './skuForm.vue'
 let categoryStore = useCategoryStore()
-let scene = ref(0) //场景的数据 //0:显示已有SPU  1:添加或者修改已有SPU 2:添加SKU的结构
-let pageNo = ref(1) //分页器默认页码
-let pageSize = ref(3) //每一页展示几条数据
+let scene = ref<number>(2) //场景的数据 //0:显示已有SPU  1:添加或者修改已有SPU 2:添加SKU的结构
+let pageNo = ref<number>(1) //分页器默认页码
+let pageSize = ref<number>(3) //每一页展示几条数据
 let spu = ref() //获取子组件实例SpuForm
 let records = ref<Records>([]) //存储已有的SPU的数据
 let total = ref<number>(0) //存储已有SPU总个数
@@ -97,6 +97,11 @@ const changeScene = (obj: any) => {
 const addSpu = () => {
     scene.value = 1 //切换为场景1:添加与修改已有SPU结构->SpuForm
     spu.value.initAddSpu() //调用子组件实例方法获取完整已有的SPU的数据
+}
+//添加sku的回调
+const addSku = () => {
+    scene.value = 2 //切换场景为1 添加场景skuform
+
 }
 //路由组件销毁前，清除仓库关于分类的数据
 onBeforeUnmount(() => {
