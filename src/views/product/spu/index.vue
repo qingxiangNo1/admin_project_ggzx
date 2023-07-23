@@ -21,7 +21,7 @@
                     <template #='{ row, $index }'>
                         <el-button type="primary" size="small" @click="edit(row)" icon="Edit" title="编辑spu">
                         </el-button>
-                        <el-button type="primary" size="small" @click="addSku" icon="Plus" title="添加sku">
+                        <el-button type="primary" size="small" @click="addSku(row)" icon="Plus" title="添加sku">
                         </el-button><el-button type="primary" size="small" @click="" icon="View" title="查看spu">
                         </el-button><el-button type="primary" size="small" @click="" icon="Delete" title="删除spu">
                         </el-button>
@@ -36,7 +36,7 @@
         <!-- 添加SPU|修改SPU子组件 -->
         <SpuForm v-show="scene == 1" @changeScene="changeScene" ref="spu"></SpuForm>
         <!-- 添加SKU的子组件 -->
-        <SkuForm v-show="scene == 2" @changeScene="changeScene"></SkuForm>
+        <SkuForm v-show="scene == 2" @changeScene="changeScene" ref="sku"></SkuForm>
         <!-- dialog对话框:展示已有的SKU数据 -->
     </el-card>
 </template>
@@ -50,10 +50,11 @@ import type { HasResponseDate, Records } from '@/api/product/spu/type'
 import SpuForm from './spuForm.vue'
 import SkuForm from './skuForm.vue'
 let categoryStore = useCategoryStore()
-let scene = ref<number>(2) //场景的数据 //0:显示已有SPU  1:添加或者修改已有SPU 2:添加SKU的结构
+let scene = ref<number>(0) //场景的数据 //0:显示已有SPU  1:添加或者修改已有SPU 2:添加SKU的结构
 let pageNo = ref<number>(1) //分页器默认页码
 let pageSize = ref<number>(3) //每一页展示几条数据
-let spu = ref() //获取子组件实例SpuForm
+let spu = ref<any>() //获取子组件实例SpuForm
+let sku = ref<any>() //获取子组件实例skuform
 let records = ref<Records>([]) //存储已有的SPU的数据
 let total = ref<number>(0) //存储已有SPU总个数
 //监听三级分类ID变化
@@ -99,9 +100,9 @@ const addSpu = () => {
     spu.value.initAddSpu() //调用子组件实例方法获取完整已有的SPU的数据
 }
 //添加sku的回调
-const addSku = () => {
+const addSku = (row:any) => {
     scene.value = 2 //切换场景为1 添加场景skuform
-
+    sku.value.initAddSku(categoryStore.c1Id,categoryStore.c2Id,row)
 }
 //路由组件销毁前，清除仓库关于分类的数据
 onBeforeUnmount(() => {
