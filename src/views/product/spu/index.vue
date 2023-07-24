@@ -22,7 +22,7 @@
                         <el-button type="primary" size="small" @click="edit(row)" icon="Edit" title="编辑spu">
                         </el-button>
                         <el-button type="primary" size="small" @click="addSku(row)" icon="Plus" title="添加sku">
-                        </el-button><el-button type="primary" size="small" @click="" icon="View" title="查看spu">
+                        </el-button><el-button type="primary" size="small" @click="findSku(row)" icon="View" title="查看spu">
                         </el-button><el-button type="primary" size="small" @click="" icon="Delete" title="删除spu">
                         </el-button>
                     </template>
@@ -38,15 +38,27 @@
         <!-- 添加SKU的子组件 -->
         <SkuForm v-show="scene == 2" @changeScene="changeScene" ref="sku"></SkuForm>
         <!-- dialog对话框:展示已有的SKU数据 -->
+        <el-dialog v-model="display">
+            <el-table :data="skuArr" border >
+                <el-table-column label="SKU名字" prop="skuName" align="center"></el-table-column>
+                <el-table-column label="SKU价格" prop="price" align="center"></el-table-column>
+                <el-table-column label="SKU重量" prop="weight" align="center"></el-table-column>
+                <el-table-column label="SKU图片" align="center">
+                    <template #='{ row, $index }'>
+                        <img :src="row.skuDefaultImg" alt="" style="weight:100px;height: 100px;">
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-dialog>
     </el-card>
 </template>
 
 <script setup lang="ts">
-import { ref, watch,onBeforeUnmount } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
 import Category from '@/components/Category/index.vue'
 import useCategoryStore from '@/store/modules/category' //引入分类的仓库
-import { reqHasSpu } from '@/api/product/spu'
-import type { HasResponseDate, Records } from '@/api/product/spu/type'
+import { reqHasSpu, reqSkuList } from '@/api/product/spu'
+import type { HasResponseDate, Records, SkuData } from '@/api/product/spu/type'
 import SpuForm from './spuForm.vue'
 import SkuForm from './skuForm.vue'
 let categoryStore = useCategoryStore()
@@ -57,6 +69,8 @@ let spu = ref<any>() //获取子组件实例SpuForm
 let sku = ref<any>() //获取子组件实例skuform
 let records = ref<Records>([]) //存储已有的SPU的数据
 let total = ref<number>(0) //存储已有SPU总个数
+let skuArr = ref<SkuData[]>([])
+let display = ref<boolean>(false)
 //监听三级分类ID变化
 watch(() =>
     categoryStore.c3Id
@@ -100,9 +114,20 @@ const addSpu = () => {
     spu.value.initAddSpu() //调用子组件实例方法获取完整已有的SPU的数据
 }
 //添加sku的回调
-const addSku = (row:any) => {
+const addSku = (row: any) => {
     scene.value = 2 //切换场景为1 添加场景skuform
-    sku.value.initAddSku(categoryStore.c1Id,categoryStore.c2Id,row)
+    sku.value.initAddSku(categoryStore.c1Id, categoryStore.c2Id, row)
+}
+const findSku = async (row: any) => {
+    let result = await reqSkuList(row.id)
+   
+    if (result.code == 200) {
+        display.value = true
+        console.log(display.value);
+        skuArr.value = result.data
+    }
+
+
 }
 //路由组件销毁前，清除仓库关于分类的数据
 onBeforeUnmount(() => {
