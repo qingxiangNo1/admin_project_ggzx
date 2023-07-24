@@ -15,27 +15,27 @@
             </el-form-item>
             <el-form-item label="平台属性">
                 <el-form :inline="true" label-width="120px">
-                    <el-form-item v-for="(attrArrValue, index) in attrArr" :key="index" :label="attrArrValue.attrName"
+                    <el-form-item  v-for="(item, index) in attrArr" :key="index" :label="item.attrName"
                         style="margin: 10px 10px;">
-                        <el-select placeholder="请选择">
-                            <el-option v-for="(item, index) in attrArrValue.attrValueList" :key="index"
-                                :label="item.valueName"></el-option>
+                        <el-select placeholder="请选择" v-model="item.attrIdAndValueId">
+                            <el-option :value="`${item.id}:${attrValue.id}`" v-for="(attrValue, index) in item.attrValueList" :key="index"
+                                :label="attrValue.valueName"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-form>
             </el-form-item>
             <el-form-item label="销售属性">
                 <el-form :inline="true">
-                    <el-form-item v-for="(saleArrValue, index) in saleArr" :key="index" :label="saleArrValue.saleAttrName">
-                        <el-select placeholder="请选择">
-                            <el-option v-for="(item, index) in saleArrValue.spuSaleAttrValueList" :key="index"
-                                :label="item.saleAttrValueName"></el-option>
+                    <el-form-item v-for="(item, index) in saleArr" :key="index" :label="item.saleAttrName">
+                        <el-select placeholder="请选择" v-model="item.saleAttrIdAndValueId">
+                            <el-option :value="`${item.id}:${saleValue.id}`" v-for="(saleValue, index) in item.spuSaleAttrValueList" :key="index"
+                                :label="saleValue.saleAttrValueName"></el-option>
                         </el-select>
                     </el-form-item>
                 </el-form>
             </el-form-item>
             <el-form-item label="图片名称">
-                <el-table border style="margin: 10px 0px;" :data="imgArr">
+                <el-table border style="margin: 10px 0px;" :data="imgArr" ref="table">
                     <el-table-column type="selection" align="center" width="80px"></el-table-column>
                     <el-table-column label="图片" align="center">
                         <template #='{ row, $index }'>
@@ -45,11 +45,11 @@
                     <el-table-column label="名称" align="center" prop="imgName"></el-table-column>
                     <el-table-column label="操作" align="center">
                         <template #='{ row, $index }'>
-                            <el-button type="primary" size="small" @click="">设为默认</el-button>
+                            <el-button type="primary" size="small" @click="handle(row)">设为默认</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-button type="primary" size="default" @click="">保存</el-button>
+                <el-button type="primary" size="default" @click="save">保存</el-button>
                 <el-button type="primary" size="default" @click="cancel">取消</el-button>
             </el-form-item>
         </el-form>
@@ -59,14 +59,15 @@
 <script setup lang="ts">
 import { reqAttr } from '@/api/product/attr'
 import { SkuData } from '@/api/product/spu/type'
-import { reqSpuImageList, reqSpuHasSaleAttr } from '@/api/product/spu'
-import { ref } from 'vue'
+import { reqSpuImageList, reqSpuHasSaleAttr,reqAddSku } from '@/api/product/spu'
+import { ref,reactive } from 'vue'
+import { ElMessage } from 'element-plus'
 let $emit = defineEmits(['changeScene'])
 let attrArr = ref<any>()
 let imgArr = ref<any>()
 let saleArr = ref<any>()
 //收集SKU的参数
-let skuParams = ref<SkuData>({
+let skuParams = reactive<SkuData>({
     //父组件传递过来的数据
     "category3Id": "",//三级分类的ID
     "spuId": "",//已有的SPU的ID
@@ -76,28 +77,79 @@ let skuParams = ref<SkuData>({
     "price": "",//sku价格
     "weight": "",//sku重量
     "skuDesc": "",//sku的描述
-
     "skuAttrValueList": [//平台属性的收集
     ],
     "skuSaleAttrValueList": [//销售属性
     ],
     "skuDefaultImg": "",//sku图片地址
 })
+let table = ref<any>()
 //取消按钮的回调
 const cancel = () => {
     $emit('changeScene', { flag: 0, params: '' })
 }
 //添加sku的自定义函数
 const initAddSku = async (c1Id: number, c2Id: number, spu: any) => {
-    skuParams.value.category3Id = spu.category3Id
-    skuParams.value.spuId = spu.id
-    skuParams.value.tmId = spu.tmId
+    skuParams.category3Id = spu.category3Id
+    skuParams.spuId = spu.id
+    skuParams.tmId = spu.tmId
     let result: any = await reqAttr(c1Id, c2Id, spu.category3Id)
     let result1: any = await reqSpuImageList(spu.id)
     let result2: any = await reqSpuHasSaleAttr(spu.id)
     imgArr.value = result1.data
     attrArr.value = result.data
     saleArr.value = result2.data
+}
+const handle = (row:any) => {
+    imgArr.value.forEach((element:any) => {
+        table.value.toggleRowSelection(element,false)
+    });
+    table.value.toggleRowSelection(row,true)
+    skuParams.skuDefaultImg = row.imgUrl
+
+}
+const save = async() => {
+    skuParams.skuAttrValueList = attrArr.value.reduce((prev:any,next:any)=>{
+        if(next.attrIdAndValueId){
+           
+            let [attrId,valueId] = next.attrIdAndValueId.split(':')
+            prev.push({
+                attrId,
+                valueId,
+            })
+        }
+        return prev
+    },[])
+    skuParams.skuSaleAttrValueList = saleArr.value.reduce((prev:any,next:any)=>{
+        if(next.saleAttrIdAndValueId){
+            let [saleAttrId,saleAttrValueId] = next.saleAttrIdAndValueId.split(':')
+            prev.push({
+                saleAttrId,
+                saleAttrValueId
+            })
+        }
+        return prev
+    },[])
+    let result = await reqAddSku(skuParams)
+    if(result.code ==200){
+        ElMessage({
+            type:'success',
+            message:'保存成功'
+        })
+        $emit('changeScene',{
+            flag:0,
+            params:''
+        })
+    }else{
+        ElMessage({
+            type:'error',
+            message:'保存失败'
+        })
+        $emit('changeScene',{
+            flag:0,
+            params:''
+        })
+    }
 }
 defineExpose({ initAddSku })
 </script>
