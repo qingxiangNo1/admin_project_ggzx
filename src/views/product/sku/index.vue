@@ -34,21 +34,21 @@
                     <div>
                         <el-row style="margin: 10px 0px;">
                             <el-col :span="6">名称</el-col>
-                            <el-col :span="18">123</el-col>
+                            <el-col :span="18">{{ skuInfo.skuName }}</el-col>
                         </el-row>
                         <el-row style="margin: 10px 0px;">
                             <el-col :span="6">描述</el-col>
-                            <el-col :span="18">123</el-col>
+                            <el-col :span="18">{{ skuInfo.skuDesc }}</el-col>
                         </el-row>
                         <el-row style="margin: 10px 0px;">
                             <el-col :span="6">价格</el-col>
-                            <el-col :span="18">123</el-col>
+                            <el-col :span="18">{{ skuInfo.price }}</el-col>
                         </el-row>
                         <el-row style="margin: 10px 0px;">
                             <el-col :span="6">平台属性</el-col>
                             <el-col :span="18">
                                 <el-tag style="margin: 3px 5px;" type="success" size="small" effect="dark" closable
-                                    @close="" v-for="(item, index) in 5" :key="index">item</el-tag>
+                                    @close="" v-for="(item, index) in skuInfo.skuAttrValueList" :key="index">{{ item.attrName }}</el-tag>
 
                             </el-col>
                         </el-row>
@@ -56,15 +56,15 @@
                             <el-col :span="6">销售属性</el-col>
                             <el-col :span="18">
                                 <el-tag style="margin: 3px 5px;" type='danger' size="small" effect="dark" closable @close=""
-                                    v-for="(item, index) in 5" :key="index">item</el-tag>
+                                    v-for="(item, index) in skuInfo.skuSaleAttrValueList" :key="index">{{ item.saleAttrName }}</el-tag>
                             </el-col>
                         </el-row>
                         <el-row>
                             <el-col :span="6">商品图片</el-col>
                             <el-col :span="18">
                                 <el-carousel :interval="4000" type="card" height="200px">
-                                    <el-carousel-item v-for="item in 6" :key="item">
-                                        <h3 text="2xl" justify="center">{{ item }}</h3>
+                                    <el-carousel-item v-for="item in skuInfo.skuImageList" :key="item">
+                                        <img :src="item.imgUrl" alt="" style="width: 100%;height: 100%;">
                                     </el-carousel-item>
                                 </el-carousel>
                             </el-col>
@@ -80,14 +80,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { SkuData, SkuResponseData } from '@/api/product/sku/type'
-import { reqSkuList, reqCancelSale, reqSaleSku } from '@/api/product/sku'
+import { SkuData, SkuResponseData, SkuInfoData } from '@/api/product/sku/type'
+import { reqSkuList, reqCancelSale, reqSaleSku, reqSalInfo } from '@/api/product/sku'
 import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(3)
 let total = ref<number>(0)
 let skuArr = ref<SkuData[]>([])
 let drawer = ref<boolean>(false)
+let skuInfo = ref<any>({})
 onMounted(() => {
     getHasSku()
 })
@@ -139,8 +140,10 @@ const updateSku = () => {
         message: '程序员在努力开发中......'
     })
 }
-const findSku = () => {
+const findSku = async (row: any) => {
     drawer.value = true
+    let result = await reqSalInfo(row.id)
+    skuInfo.value = result.data   
 }
 </script>
 

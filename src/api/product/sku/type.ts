@@ -41,3 +41,6 @@ export interface Attr {
         "pages": number
     }
   }
+  export interface SkuInfoData extends ResposeData{
+    data: SkuData
+  }
