@@ -19,7 +19,11 @@
                             :icon="row.isSale == 0 ? 'Top' : 'Bottom'"></el-button>
                         <el-button type="primary" size="small" @click="updateSku" icon="Edit"></el-button>
                         <el-button type="primary" size="small" @click="findSku(row)" icon="InfoFilled"></el-button>
-                        <el-button type="primary" size="small" @click="" icon="Delete"></el-button>
+                        <el-popconfirm :title="`你确定删除${row.skuName}吗？`" @confirm="deleteSku(row)">
+                            <template #reference>
+                                <el-button type="primary" size="small" icon="Delete"></el-button>
+                            </template>
+                        </el-popconfirm>
                     </template>
                 </el-table-column>
             </el-table>
@@ -48,7 +52,8 @@
                             <el-col :span="6">平台属性</el-col>
                             <el-col :span="18">
                                 <el-tag style="margin: 3px 5px;" type="success" size="small" effect="dark" closable
-                                    @close="" v-for="(item, index) in skuInfo.skuAttrValueList" :key="index">{{ item.attrName }}</el-tag>
+                                    @close="" v-for="(item, index) in skuInfo.skuAttrValueList" :key="index">{{
+                                        item.attrName }}</el-tag>
 
                             </el-col>
                         </el-row>
@@ -56,7 +61,8 @@
                             <el-col :span="6">销售属性</el-col>
                             <el-col :span="18">
                                 <el-tag style="margin: 3px 5px;" type='danger' size="small" effect="dark" closable @close=""
-                                    v-for="(item, index) in skuInfo.skuSaleAttrValueList" :key="index">{{ item.saleAttrName }}</el-tag>
+                                    v-for="(item, index) in skuInfo.skuSaleAttrValueList" :key="index">{{ item.saleAttrName
+                                    }}</el-tag>
                             </el-col>
                         </el-row>
                         <el-row>
@@ -80,8 +86,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { SkuData, SkuResponseData, SkuInfoData } from '@/api/product/sku/type'
-import { reqSkuList, reqCancelSale, reqSaleSku, reqSalInfo } from '@/api/product/sku'
+import { SkuData, SkuResponseData } from '@/api/product/sku/type'
+import { reqSkuList, reqCancelSale, reqSaleSku, reqSalInfo, reqDeleteSku } from '@/api/product/sku'
 import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(3)
@@ -143,7 +149,22 @@ const updateSku = () => {
 const findSku = async (row: any) => {
     drawer.value = true
     let result = await reqSalInfo(row.id)
-    skuInfo.value = result.data   
+    skuInfo.value = result.data
+}
+const deleteSku = async (row: any) => {
+    let result = await reqDeleteSku(row.id)
+    if (result.code == 200) {
+        ElMessage({
+            type: 'success',
+            message: '删除成功'
+        })
+    } else {
+        ElMessage({
+            type: 'error',
+            message: '删除失败'
+        })
+    }
+    getHasSku(skuArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
 }
 </script>
 

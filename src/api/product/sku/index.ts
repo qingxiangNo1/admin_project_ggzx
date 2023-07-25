@@ -4,9 +4,11 @@ enum API{
     SKU_URL='/admin/product/list/',
     SALE_URL='/admin/product/onSale/',
     CANCELSALE_URL='/admin/product/cancelSale/',
-    SKUINFO_URL='/admin/product/getSkuInfo/'
+    SKUINFO_URL='/admin/product/getSkuInfo/',
+    DELETESKU_URL='/admin/product/deleteSku/'
 }
 export const reqSkuList = (page:number,limit:number) => request.get<any,SkuResponseData>(API.SKU_URL + `${page}/${limit}`)
 export const reqSaleSku = (skuid:number) => request.get<any,any>(API.SALE_URL + `${skuid}`)
 export const reqCancelSale = (skuid:number) => request.get<any,any>(API.CANCELSALE_URL + `${skuid}`)
 export const reqSalInfo = (skuid:number) => request.get<any,SkuInfoData>(API.SKUINFO_URL + `${skuid}`)
+export const reqDeleteSku = (skuid:number) => request.delete<any,any>(API.DELETESKU_URL + `${skuid}`)
