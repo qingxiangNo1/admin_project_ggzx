@@ -11,12 +11,12 @@
                         <img :src="row.skuDefaultImg" alt="" style="width: 100px;height: 100px;">
                     </template>
                 </el-table-column>
-                <el-table-column label="重量" width="150px" align="center" prop="weight"></el-table-column>
+                <el-table-column label="重量(kg)" width="150px" align="center" prop="weight"></el-table-column>
                 <el-table-column label="价格" width="150px" align="center" prop="price"></el-table-column>
                 <el-table-column label="操作" width="300px" align="center" fixed="right">
                     <template #='{ row, index }'>
-                        <el-button type="primary" size="small" @click="" icon="Top"></el-button>
-                        <el-button type="primary" size="small" @click="" icon="Edit"></el-button>
+                        <el-button type="primary" size="small" @click="saleAndCancelSku(row)" :icon="row.isSale==0?'Top':'Bottom'"></el-button>
+                        <el-button type="primary" size="small" @click="updateSku" icon="Edit"></el-button>
                         <el-button type="primary" size="small" @click="" icon="InfoFilled"></el-button>
                         <el-button type="primary" size="small" @click="" icon="Delete"></el-button>
                     </template>
@@ -32,7 +32,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { SkuData, SkuResponseData } from '@/api/product/sku/type'
-import { reqSkuList } from '@/api/product/sku'
+import { reqSkuList,reqCancelSale,reqSaleSku } from '@/api/product/sku'
+import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(3)
 let total = ref<number>(0)
@@ -48,10 +49,46 @@ const getHasSku = async (pager = 1) => {
         total.value = result.data.total
     }
 }
-const handleCurrentChange = (num: number) => {
+const handleCurrentChange = () => {
     getHasSku()
 }
-
+const saleAndCancelSku = async(sku:SkuData) => {
+       if(sku.isSale){
+          let result = await reqCancelSale((sku.id as number))
+            if(result.code==200){
+                ElMessage({
+                    type:'success',
+                    message:'下架成功'
+                })
+            }else{
+                ElMessage({
+                    type:'error',
+                    message:'下架失败'
+                })  
+            }
+            getHasSku(pageNo.value)
+       }else{
+          let result = await reqSaleSku((sku.id as number))
+          if(result.code==200){
+                ElMessage({
+                    type:'success',
+                    message:'上架成功'
+                })
+            }else{
+                ElMessage({
+                    type:'error',
+                    message:'上架失败'
+                })  
+            }
+          getHasSku(pageNo.value)
+       }
+}
+const updateSku =() => {
+    ElMessage({
+        type:'success',
+        message:'程序员在努力开发中......'
+    })
+}
 </script>
 
 <style scoped></style>

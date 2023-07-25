@@ -23,6 +23,8 @@ export interface Attr {
     skuAttrValueList?: Attr[]
     skuSaleAttrValueList?: saleArr[]
     skuDefaultImg: string //sku图片地址
+    isSale?:number,
+    id?:number
   }
   export interface SkuResponseData extends ResposeData {
     data:{
