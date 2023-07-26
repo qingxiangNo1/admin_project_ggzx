@@ -1,10 +1,11 @@
 import request from "@/utils/request";
-import { UserResponseData, User,allRoleResponseData } from './type'
+import { UserResponseData, User,allRoleResponseData,SetRoleData } from './type'
 enum API {
     ALLUSER_URL = '/admin/acl/user/',
     ADDUSER_URL = '/admin/acl/user/save',
     UPDATEUSER_URL = '/admin/acl/user/update',
-    ALLROLE_URL = '/admin/acl/user/toAssign/'
+    ALLROLE_URL = '/admin/acl/user/toAssign/',
+    SETUSERROLE_URL = '/admin/acl/user/doAssignRole'
 }
 export const reqUserInfo = (page: number, limit: number) => request.get<any, UserResponseData>(API.ALLUSER_URL + `${page}/${limit}`)
 export const reqAddOrUpdateUserInfo = (data: User) => {
@@ -17,3 +18,4 @@ export const reqAddOrUpdateUserInfo = (data: User) => {
     }
 }
 export const reqAllRole = (adminid:number) => request.get<any,allRoleResponseData>(API.ALLROLE_URL+`${adminid}`)
+export const reqSetUserRole = (data:SetRoleData) => request.post<any,any>(API.SETUSERROLE_URL,data)

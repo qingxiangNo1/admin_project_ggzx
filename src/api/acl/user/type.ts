@@ -32,9 +32,13 @@ export interface RoleData {
     remark?: null
 }
 export type AssiginRoles = RoleData[]
-export interface allRoleResponseData extends ResponseData{
-    data:{
-        assignRoles:AssiginRoles,
-        allRolesList:AssiginRoles
+export interface allRoleResponseData extends ResponseData {
+    data: {
+        assignRoles: AssiginRoles,
+        allRolesList: AssiginRoles
     }
+}
+export interface SetRoleData {
+    roleIdList: number[],
+    userId: number
 }

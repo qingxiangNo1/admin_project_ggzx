@@ -84,8 +84,8 @@
                 </template>
                 <template #footer>
                     <div style="flex: auto">
-                        <el-button @click="cancelClick">取消</el-button>
-                        <el-button type="primary" @click="confirmClick">确认</el-button>
+                        <el-button @click="drawer1=false">取消</el-button>
+                        <el-button type="primary" @click="confirm">确认</el-button>
                     </div>
                 </template>
             </el-drawer>
@@ -95,8 +95,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { reqUserInfo, reqAddOrUpdateUserInfo,reqAllRole } from '@/api/acl/user'
-import { User, Records,allRoleResponseData,RoleData } from '@/api/acl/user/type'
+import { reqUserInfo, reqAddOrUpdateUserInfo,reqAllRole,reqSetUserRole } from '@/api/acl/user'
+import { User, Records,allRoleResponseData,RoleData,SetRoleData } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
@@ -176,10 +176,28 @@ const setRole = async(row: any) => {
         allRole.value = result.data.allRolesList
         userRole.value = result.data.assignRoles
     }
-    console.log(result);
 }
-
-
+const confirm =async() => {
+   drawer1.value = false
+   let roleData:SetRoleData = {
+    roleIdList : userRole.value.map(item => (item.id as number)),
+    userId : (userParams.id as number)
+   }
+   let result = await reqSetUserRole(roleData)
+  if(result.code == 200){
+    ElMessage({
+        type:'success',
+        message:'分配职务成功'
+    })
+    getUserInfo(pageNo.value)
+  }else{
+    ElMessage({
+        type:'error',
+        message:'分配职务失败'
+    })
+    getUserInfo(pageNo.value)
+  }
+}
 const handleCheckAllChange = (val: boolean) => {
   userRole.value = val ? allRole.value : []
   isIndeterminate.value = false
