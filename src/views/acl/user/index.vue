@@ -40,14 +40,14 @@
                 </template>
                 <template #default>
                     <div>
-                        <el-form>
-                            <el-form-item label="用户姓名">
+                        <el-form :model="userParams" ref="refForm" :rules="rules">
+                            <el-form-item label="用户姓名" prop="username">
                                 <el-input placeholder="请你输入用户姓名" v-model="userParams.username"></el-input>
                             </el-form-item>
-                            <el-form-item label="用户昵称">
+                            <el-form-item label="用户昵称" prop="name">
                                 <el-input placeholder="请你输入用户昵称" v-model="userParams.name"></el-input>
                             </el-form-item>
-                            <el-form-item label="用户密码">
+                            <el-form-item label="用户密码" prop="password">
                                 <el-input placeholder="请你输入密码" v-model="userParams.password"></el-input>
                             </el-form-item>
                         </el-form>
@@ -65,9 +65,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted,reactive } from 'vue';
-import { reqUserInfo,reqAddOrUpdateUserInfo } from '@/api/acl/user'
-import { User,Records } from '@/api/acl/user/type'
+import { ref, onMounted, reactive, nextTick } from 'vue';
+import { reqUserInfo, reqAddOrUpdateUserInfo } from '@/api/acl/user'
+import { User, Records } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
@@ -75,10 +75,12 @@ let total = ref<number>(20)
 let userArr = ref<Records>([])
 let drawer = ref<boolean>(false)
 let userParams = reactive<User>({
-    username:'',
-    name:'',
-    password:'',
+    username: '',
+    name: '',
+    password: '',
 })
+
+let refForm = ref<any>()
 onMounted(() => {
     getUserInfo()
 })
@@ -93,28 +95,66 @@ const handleSizeChange = () => {
 }
 const addUser = () => {
     drawer.value = true
+    Object.assign(userParams, {
+        username: '',
+        name: '',
+        password: '',
+    })
+    nextTick(() => {
+       refForm.value.clearValidate('username')
+       refForm.value.clearValidate('name')
+       refForm.value.clearValidate('password')
+    })
 }
 const updateUser = () => {
     drawer.value = true
 }
-const save = async() => {
-  let result:any = await reqAddOrUpdateUserInfo(userParams)
-  if(result.code == 200){
-    drawer.value = false
-    ElMessage({
-        type:'success',
-        message:'添加成功'
-    })
-    getUserInfo()
-  }else{
-    drawer.value = false
-    ElMessage({
-        type:'error',
-        message:'添加失败'
-    })
-    getUserInfo()
-  }
+const save = async () => {
+    await refForm.value.validate()
+    let result: any = await reqAddOrUpdateUserInfo(userParams)
+    if (result.code == 200) {
+        drawer.value = false
+        ElMessage({
+            type: 'success',
+            message: userParams.id ? '修改成功' : '添加成功'
+        })
+        getUserInfo()
+    } else {
+        drawer.value = false
+        ElMessage({
+            type: 'error',
+            message: userParams.id ? '修改失败' : '添加失败'
+        })
+        getUserInfo()
+    }
 }
+const validateUsername = (rule: any, value: any, callback: any) => {
+    if (value.trim().length > 4) {
+        callback()
+    } else {
+        callback(new Error('用户姓名至少五位'))
+    }
+}
+const validateName = (rule: any, value: any, callback: any) => {
+    if (value.trim().length > 4) {
+        callback()
+    } else {
+        callback(new Error('用户昵称至少五位'))
+    }
+}
+const validatePassword = (rule: any, value: any, callback: any) => {
+    if (value.trim().length > 5) {
+        callback()
+    } else {
+        callback(new Error('用户姓名至少六位'))
+    }
+}
+const rules = {
+    username: [{ required: true, validator: validateUsername, trigger: 'blur' }],
+    name: [{ required: true, validator: validateName, trigger: 'blur' }],
+    password: [{ required: true, validator: validatePassword, trigger: 'blur' }]
+}
+
 </script>
 
 <style scoped>
