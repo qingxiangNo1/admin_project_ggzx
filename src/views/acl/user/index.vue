@@ -36,7 +36,7 @@
                 @size-change="handleSizeChange" @current-change="getUserInfo" />
             <el-drawer v-model="drawer">
                 <template #header>
-                    <h4>添加用户</h4>
+                    <h4>{{ userParams.id ? '更新用户' : '添加用户' }}</h4>
                 </template>
                 <template #default>
                     <div>
@@ -47,7 +47,7 @@
                             <el-form-item label="用户昵称" prop="name">
                                 <el-input placeholder="请你输入用户昵称" v-model="userParams.name"></el-input>
                             </el-form-item>
-                            <el-form-item label="用户密码" prop="password">
+                            <el-form-item label="用户密码" prop="password" v-if="!userParams.id">
                                 <el-input placeholder="请你输入密码" v-model="userParams.password"></el-input>
                             </el-form-item>
                         </el-form>
@@ -96,18 +96,24 @@ const handleSizeChange = () => {
 const addUser = () => {
     drawer.value = true
     Object.assign(userParams, {
+        id: 0,
         username: '',
         name: '',
         password: '',
     })
     nextTick(() => {
-       refForm.value.clearValidate('username')
-       refForm.value.clearValidate('name')
-       refForm.value.clearValidate('password')
+        refForm.value.clearValidate('username')
+        refForm.value.clearValidate('name')
+        refForm.value.clearValidate('password')
     })
 }
-const updateUser = () => {
+const updateUser = (row:any) => {
     drawer.value = true
+    Object.assign(userParams,row)
+    nextTick(() => {
+        refForm.value.clearValidate('username')
+        refForm.value.clearValidate('name')
+    })
 }
 const save = async () => {
     await refForm.value.validate()
@@ -119,6 +125,7 @@ const save = async () => {
             message: userParams.id ? '修改成功' : '添加成功'
         })
         getUserInfo()
+        window.location.reload()
     } else {
         drawer.value = false
         ElMessage({
