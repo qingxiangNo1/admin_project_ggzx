@@ -13,8 +13,8 @@
         </el-card>
         <el-card>
             <el-button type="primary" size="default" @click="addUser">添加用户</el-button>
-            <el-button type="danger" size="default" @click="">批量删除</el-button>
-            <el-table style="margin: 10px 0px;" border :data="userArr">
+            <el-button type="danger" size="default" @click="removeBatchUser" :disabled="selectChangeValue.length>0?false:true">批量删除</el-button>
+            <el-table style="margin: 10px 0px;" border :data="userArr" @selection-change="selectChange">
                 <el-table-column type="selection" align="center"></el-table-column>
                 <el-table-column label="#" align="center" width="60px" type="index"></el-table-column>
                 <el-table-column label="ID" align="center" prop="id" width="70px"></el-table-column>
@@ -27,7 +27,11 @@
                     <template #='{ row, $index }'>
                         <el-button type="primary" size="small" @click="setRole(row)" icon="User">分配角色</el-button>
                         <el-button type="primary" size="small" @click="updateUser(row)" icon="Edit">编辑</el-button>
-                        <el-button type="primary" size="small" @click="" icon="Delete">删除</el-button>
+                        <el-popconfirm :title="`你确定删除${row.username}吗?`" @confirm="deleteUser(row)">
+                            <template #reference>
+                                <el-button type="primary" size="small" icon="Delete">删除</el-button>
+                            </template>
+                        </el-popconfirm>
                     </template>
                 </el-table-column>
             </el-table>
@@ -84,7 +88,7 @@
                 </template>
                 <template #footer>
                     <div style="flex: auto">
-                        <el-button @click="drawer1=false">取消</el-button>
+                        <el-button @click="drawer1 = false">取消</el-button>
                         <el-button type="primary" @click="confirm">确认</el-button>
                     </div>
                 </template>
@@ -95,8 +99,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { reqUserInfo, reqAddOrUpdateUserInfo,reqAllRole,reqSetUserRole } from '@/api/acl/user'
-import { User, Records,allRoleResponseData,RoleData,SetRoleData } from '@/api/acl/user/type'
+import { reqUserInfo, reqAddOrUpdateUserInfo, reqAllRole, reqSetUserRole, reqRemoveUser, reqRemoveAllUser } from '@/api/acl/user'
+import { User, Records, allRoleResponseData, RoleData, SetRoleData } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
@@ -110,6 +114,7 @@ let userParams = reactive<User>({
 })
 let refForm = ref<any>()
 let drawer1 = ref<boolean>(false)
+let selectChangeValue = ref<User[]>([])
 const checkAll = ref(false)
 const isIndeterminate = ref(true)
 const userRole = ref<RoleData[]>([])
@@ -168,46 +173,83 @@ const save = async () => {
         getUserInfo()
     }
 }
-const setRole = async(row: any) => {
+const setRole = async (row: any) => {
     drawer1.value = true
     Object.assign(userParams, row)
-    let result:allRoleResponseData = await reqAllRole(row.id)
-    if(result.code == 200){
+    let result: allRoleResponseData = await reqAllRole(row.id)
+    if (result.code == 200) {
         allRole.value = result.data.allRolesList
         userRole.value = result.data.assignRoles
     }
 }
-const confirm =async() => {
-   drawer1.value = false
-   let roleData:SetRoleData = {
-    roleIdList : userRole.value.map(item => (item.id as number)),
-    userId : (userParams.id as number)
-   }
-   let result = await reqSetUserRole(roleData)
-  if(result.code == 200){
-    ElMessage({
-        type:'success',
-        message:'分配职务成功'
-    })
-    getUserInfo(pageNo.value)
-  }else{
-    ElMessage({
-        type:'error',
-        message:'分配职务失败'
-    })
-    getUserInfo(pageNo.value)
-  }
+const confirm = async () => {
+    drawer1.value = false
+    let roleData: SetRoleData = {
+        roleIdList: userRole.value.map(item => (item.id as number)),
+        userId: (userParams.id as number)
+    }
+    let result = await reqSetUserRole(roleData)
+    if (result.code == 200) {
+        ElMessage({
+            type: 'success',
+            message: '分配职务成功'
+        })
+        getUserInfo(pageNo.value)
+    } else {
+        ElMessage({
+            type: 'error',
+            message: '分配职务失败'
+        })
+        getUserInfo(pageNo.value)
+    }
 }
 const handleCheckAllChange = (val: boolean) => {
-  userRole.value = val ? allRole.value : []
-  isIndeterminate.value = false
+    userRole.value = val ? allRole.value : []
+    isIndeterminate.value = false
 }
 const handleCheckedCitiesChange = (value: string[]) => {
-  const checkedCount = value.length
-  checkAll.value = checkedCount === allRole.value.length
-  isIndeterminate.value = checkedCount > 0 && checkedCount < allRole.value.length
+    const checkedCount = value.length
+    checkAll.value = checkedCount === allRole.value.length
+    isIndeterminate.value = checkedCount > 0 && checkedCount < allRole.value.length
 }
-
+const deleteUser = async (row: any) => {
+    let result = await reqRemoveUser(row.id)
+    if (result.code == 200) {
+        ElMessage({
+            type: 'success',
+            message: `删除${row.username}成功`
+        })
+        getUserInfo(userArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
+    } else {
+        ElMessage({
+            type: 'error',
+            message: `删除${row.username}失败`
+        })
+        getUserInfo(userArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
+    }
+}
+const selectChange = (value:any) => {
+    selectChangeValue.value = value
+}
+const removeBatchUser = async() => {
+    let selectList:any = selectChangeValue.value.map(item => 
+      (item.id as number)
+    )
+    let result = await reqRemoveAllUser(selectList)
+    if(result.code == 200){
+        ElMessage({
+            type:'success',
+            message:'删除成功'
+        })
+        getUserInfo(userArr.value.length>1?pageNo.value:pageNo.value-1)
+    }else{
+        ElMessage({
+            type:'error',
+            message:'删除失败'
+        })
+        getUserInfo(userArr.value.length>1?pageNo.value:pageNo.value-1)
+    }
+}
 const validateUsername = (rule: any, value: any, callback: any) => {
     if (value.trim().length > 4) {
         callback()
@@ -234,9 +276,7 @@ const rules = {
     name: [{ required: true, validator: validateName, trigger: 'blur' }],
     password: [{ required: true, validator: validatePassword, trigger: 'blur' }]
 }
-
 </script>
-
 <style scoped>
 .form {
     display: flex;
