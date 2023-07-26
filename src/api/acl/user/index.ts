@@ -9,7 +9,7 @@ enum API {
     DELETEUSER_URL = '/admin/acl/user/remove/',
     DELETEALLUSER_URL = '/admin/acl/user/batchRemove'
 }
-export const reqUserInfo = (page: number, limit: number) => request.get<any, UserResponseData>(API.ALLUSER_URL + `${page}/${limit}`)
+export const reqUserInfo = (page: number, limit: number , username:string) => request.get<any, UserResponseData>(API.ALLUSER_URL + `${page}/${limit}/?username=${username}`)
 export const reqAddOrUpdateUserInfo = (data: User) => {
     if (data.id) {
         //修改

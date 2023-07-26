@@ -3,11 +3,11 @@
         <el-card style="margin: 10px 0px;height: 80px;">
             <el-form :inline="true" class="form">
                 <el-form-item label="用户名:">
-                    <el-input placeholder="请你输入搜索用户名"></el-input>
+                    <el-input placeholder="请你输入搜索用户名" v-model="keyword"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" size="default" @click="">搜索</el-button>
-                    <el-button type="primary" size="default" @click="">重置</el-button>
+                    <el-button type="primary" size="default" @click="search" :disabled="keyword?false:true">搜索</el-button>
+                    <el-button type="primary" size="default" @click="reset">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -102,6 +102,8 @@ import { ref, onMounted, reactive, nextTick } from 'vue';
 import { reqUserInfo, reqAddOrUpdateUserInfo, reqAllRole, reqSetUserRole, reqRemoveUser, reqRemoveAllUser } from '@/api/acl/user'
 import { User, Records, allRoleResponseData, RoleData, SetRoleData } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus';
+import useLayOutSettingStore from '@/store/modules/setting'
+let layoutSettingStore = useLayOutSettingStore()
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(20)
@@ -119,12 +121,13 @@ const checkAll = ref(false)
 const isIndeterminate = ref(true)
 const userRole = ref<RoleData[]>([])
 const allRole = ref<RoleData[]>([])
+let keyword = ref<string>('')
 onMounted(() => {
     getUserInfo()
 })
 const getUserInfo = async (pager = 1) => {
     pageNo.value = pager
-    let result = await reqUserInfo(pageNo.value, pageSize.value)
+    let result = await reqUserInfo(pageNo.value, pageSize.value,keyword.value)
     total.value = result.data.total
     userArr.value = result.data.records
 }
@@ -249,6 +252,12 @@ const removeBatchUser = async() => {
         })
         getUserInfo(userArr.value.length>1?pageNo.value:pageNo.value-1)
     }
+}
+const search = () => {
+    getUserInfo()
+}
+const reset = () => {
+    layoutSettingStore.refresh = !layoutSettingStore.refresh
 }
 const validateUsername = (rule: any, value: any, callback: any) => {
     if (value.trim().length > 4) {
