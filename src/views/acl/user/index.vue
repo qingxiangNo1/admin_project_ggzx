@@ -42,20 +42,20 @@
                     <div>
                         <el-form>
                             <el-form-item label="用户姓名">
-                                <el-input placeholder="请你输入用户姓名"></el-input>
+                                <el-input placeholder="请你输入用户姓名" v-model="userParams.username"></el-input>
                             </el-form-item>
                             <el-form-item label="用户昵称">
-                                <el-input placeholder="请你输入用户昵称"></el-input>
+                                <el-input placeholder="请你输入用户昵称" v-model="userParams.name"></el-input>
                             </el-form-item>
                             <el-form-item label="用户密码">
-                                <el-input placeholder="请你输入用户昵称"></el-input>
+                                <el-input placeholder="请你输入密码" v-model="userParams.password"></el-input>
                             </el-form-item>
                         </el-form>
                     </div>
                 </template>
                 <template #footer>
                     <div style="flex: auto">
-                        <el-button @click="cancelClick">确定</el-button>
+                        <el-button @click="save">确定</el-button>
                         <el-button type="primary" @click="confirmClick">取消</el-button>
                     </div>
                 </template>
@@ -65,14 +65,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { reqUserInfo } from '@/api/acl/user'
-import { User } from '@/api/acl/user/type'
+import { ref, onMounted,reactive } from 'vue';
+import { reqUserInfo,reqAddOrUpdateUserInfo } from '@/api/acl/user'
+import { User,Records } from '@/api/acl/user/type'
+import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(20)
-let userArr = ref<User[]>([])
+let userArr = ref<Records>([])
 let drawer = ref<boolean>(false)
+let userParams = reactive<User>({
+    username:'',
+    name:'',
+    password:'',
+})
 onMounted(() => {
     getUserInfo()
 })
@@ -90,6 +96,24 @@ const addUser = () => {
 }
 const updateUser = () => {
     drawer.value = true
+}
+const save = async() => {
+  let result:any = await reqAddOrUpdateUserInfo(userParams)
+  if(result.code == 200){
+    drawer.value = false
+    ElMessage({
+        type:'success',
+        message:'添加成功'
+    })
+    getUserInfo()
+  }else{
+    drawer.value = false
+    ElMessage({
+        type:'error',
+        message:'添加失败'
+    })
+    getUserInfo()
+  }
 }
 </script>
 

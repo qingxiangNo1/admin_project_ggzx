@@ -5,13 +5,13 @@ export interface ResponseData{
 }
 export interface User{
     id?: number,
-    createTime: string,
-    updateTime: string,
+    createTime?: string,
+    updateTime?: string,
     username?: string,
     password?: string,
     name?: string,
-    phone: null,
-    roleName: string,
+    phone?: null,
+    roleName?: string,
 }
 export type Records = User[]
 export interface UserResponseData extends ResponseData{
