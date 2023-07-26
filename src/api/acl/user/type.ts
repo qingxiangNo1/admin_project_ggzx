@@ -1,9 +1,9 @@
-export interface ResponseData{
-    code:number,
-    message:string,
-    ok:boolean
+export interface ResponseData {
+    code: number,
+    message: string,
+    ok: boolean
 }
-export interface User{
+export interface User {
     id?: number,
     createTime?: string,
     updateTime?: string,
@@ -14,13 +14,27 @@ export interface User{
     roleName?: string,
 }
 export type Records = User[]
-export interface UserResponseData extends ResponseData{
-    data:{
-        records:Records,
+export interface UserResponseData extends ResponseData {
+    data: {
+        records: Records,
         total: number,
         size: number,
         current: number,
         orders: [],
         pages: number
+    }
+}
+export interface RoleData {
+    id?: number,
+    createTime?: string,
+    updateTime?: string,
+    roleName?: string,
+    remark?: null
+}
+export type AssiginRoles = RoleData[]
+export interface allRoleResponseData extends ResponseData{
+    data:{
+        assignRoles:AssiginRoles,
+        allRolesList:AssiginRoles
     }
 }

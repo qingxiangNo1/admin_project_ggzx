@@ -72,10 +72,10 @@
                             </el-form-item>
                             <el-form-item label="职位列表">
                                 <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate"
-                                    @change="handleCheckAllChange">Check all</el-checkbox>
-                                <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-                                    <el-checkbox v-for="city in cities" :key="city" :label="city">{{
-                                        city
+                                    @change="handleCheckAllChange">全选</el-checkbox>
+                                <el-checkbox-group v-model="userRole" @change="handleCheckedCitiesChange">
+                                    <el-checkbox v-for="role in allRole" :key="role.id" :label="role">{{
+                                        role.roleName
                                     }}</el-checkbox>
                                 </el-checkbox-group>
                             </el-form-item>
@@ -84,8 +84,8 @@
                 </template>
                 <template #footer>
                     <div style="flex: auto">
-                        <el-button @click="cancelClick">cancel</el-button>
-                        <el-button type="primary" @click="confirmClick">confirm</el-button>
+                        <el-button @click="cancelClick">取消</el-button>
+                        <el-button type="primary" @click="confirmClick">确认</el-button>
                     </div>
                 </template>
             </el-drawer>
@@ -95,8 +95,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { reqUserInfo, reqAddOrUpdateUserInfo } from '@/api/acl/user'
-import { User, Records } from '@/api/acl/user/type'
+import { reqUserInfo, reqAddOrUpdateUserInfo,reqAllRole } from '@/api/acl/user'
+import { User, Records,allRoleResponseData,RoleData } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus';
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
@@ -110,15 +110,10 @@ let userParams = reactive<User>({
 })
 let refForm = ref<any>()
 let drawer1 = ref<boolean>(false)
-
 const checkAll = ref(false)
 const isIndeterminate = ref(true)
-const checkedCities = ref(['Shanghai', 'Beijing'])
-const cities = ['Shanghai', 'Beijing', 'Guangzhou', 'Shenzhen']
-
-
-
-
+const userRole = ref<RoleData[]>([])
+const allRole = ref<RoleData[]>([])
 onMounted(() => {
     getUserInfo()
 })
@@ -173,20 +168,26 @@ const save = async () => {
         getUserInfo()
     }
 }
-const setRole = (row: any) => {
+const setRole = async(row: any) => {
     drawer1.value = true
     Object.assign(userParams, row)
+    let result:allRoleResponseData = await reqAllRole(row.id)
+    if(result.code == 200){
+        allRole.value = result.data.allRolesList
+        userRole.value = result.data.assignRoles
+    }
+    console.log(result);
 }
 
 
 const handleCheckAllChange = (val: boolean) => {
-  checkedCities.value = val ? cities : []
+  userRole.value = val ? allRole.value : []
   isIndeterminate.value = false
 }
 const handleCheckedCitiesChange = (value: string[]) => {
   const checkedCount = value.length
-  checkAll.value = checkedCount === cities.length
-  isIndeterminate.value = checkedCount > 0 && checkedCount < cities.length
+  checkAll.value = checkedCount === allRole.value.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < allRole.value.length
 }
 
 const validateUsername = (rule: any, value: any, callback: any) => {
