@@ -25,7 +25,7 @@
                 <el-table-column label="更新时间" align="center" prop="updateTime"></el-table-column>
                 <el-table-column label="操作" align="center" width="300px">
                     <template #='{ row, $index }'>
-                        <el-button type="primary" size="small" @click="" icon="User">分类角色</el-button>
+                        <el-button type="primary" size="small" @click="setRole(row)" icon="User">分配角色</el-button>
                         <el-button type="primary" size="small" @click="updateUser(row)" icon="Edit">编辑</el-button>
                         <el-button type="primary" size="small" @click="" icon="Delete">删除</el-button>
                     </template>
@@ -60,6 +60,35 @@
                     </div>
                 </template>
             </el-drawer>
+            <el-drawer v-model="drawer1">
+                <template #header>
+                    <h4>分配角色(职位)</h4>
+                </template>
+                <template #default>
+                    <div>
+                        <el-form>
+                            <el-form-item label="用户姓名">
+                                <el-input v-model="userParams.username" :disabled="true"></el-input>
+                            </el-form-item>
+                            <el-form-item label="职位列表">
+                                <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate"
+                                    @change="handleCheckAllChange">Check all</el-checkbox>
+                                <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+                                    <el-checkbox v-for="city in cities" :key="city" :label="city">{{
+                                        city
+                                    }}</el-checkbox>
+                                </el-checkbox-group>
+                            </el-form-item>
+                        </el-form>
+                    </div>
+                </template>
+                <template #footer>
+                    <div style="flex: auto">
+                        <el-button @click="cancelClick">cancel</el-button>
+                        <el-button type="primary" @click="confirmClick">confirm</el-button>
+                    </div>
+                </template>
+            </el-drawer>
         </el-card>
     </div>
 </template>
@@ -79,8 +108,17 @@ let userParams = reactive<User>({
     name: '',
     password: '',
 })
-
 let refForm = ref<any>()
+let drawer1 = ref<boolean>(false)
+
+const checkAll = ref(false)
+const isIndeterminate = ref(true)
+const checkedCities = ref(['Shanghai', 'Beijing'])
+const cities = ['Shanghai', 'Beijing', 'Guangzhou', 'Shenzhen']
+
+
+
+
 onMounted(() => {
     getUserInfo()
 })
@@ -107,9 +145,9 @@ const addUser = () => {
         refForm.value.clearValidate('password')
     })
 }
-const updateUser = (row:any) => {
+const updateUser = (row: any) => {
     drawer.value = true
-    Object.assign(userParams,row)
+    Object.assign(userParams, row)
     nextTick(() => {
         refForm.value.clearValidate('username')
         refForm.value.clearValidate('name')
@@ -135,6 +173,22 @@ const save = async () => {
         getUserInfo()
     }
 }
+const setRole = (row: any) => {
+    drawer1.value = true
+    Object.assign(userParams, row)
+}
+
+
+const handleCheckAllChange = (val: boolean) => {
+  checkedCities.value = val ? cities : []
+  isIndeterminate.value = false
+}
+const handleCheckedCitiesChange = (value: string[]) => {
+  const checkedCount = value.length
+  checkAll.value = checkedCount === cities.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < cities.length
+}
+
 const validateUsername = (rule: any, value: any, callback: any) => {
     if (value.trim().length > 4) {
         callback()
