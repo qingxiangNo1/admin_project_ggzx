@@ -12,49 +12,68 @@
             </el-form>
         </el-card>
         <el-card style="margin: 10px 0px;">
-            <el-button type="primary" size="default" @click="" icon="Plus">添加角色</el-button>
+            <el-button type="primary" size="default" @click="addRole" icon="Plus">添加角色</el-button>
             <el-table border style="margin: 10px 0px;" :data="roleArr">
                 <el-table-column label="#" type="index" align="center" width="80px"></el-table-column>
                 <el-table-column label="id" align="center" width="80px" prop="id"></el-table-column>
                 <el-table-column label="角色名称" align="center" prop="roleName" width="200px"></el-table-column>
                 <el-table-column label="创建时间" align="center" prop="createTime" width="250px"></el-table-column>
                 <el-table-column label="更新时间" align="center" prop="updateTime" width="250px"></el-table-column>
-                <el-table-column label="操作" align="center" >
+                <el-table-column label="操作" align="center">
                     <template #='{ row, $index }'>
                         <el-button type="primary" icon="User" size="small">分配权限</el-button>
-                        <el-button type="primary" icon="Edit" size="small">编辑</el-button>
+                        <el-button type="primary" icon="Edit" size="small" @click="updateRole(row)">编辑</el-button>
                         <el-button type="primary" icon="Delete" size="small">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
-            <el-pagination v-model:current-page="pageNo" v-model:page-size="pageSize"
-                :page-sizes="[5,7,10]"  :background="true"
-                layout="prev, pager, next, jumper,->,total, sizes," :total="total" @size-change="handleSizeChange"
-                @current-change="getHasRole" />
+            <el-pagination v-model:current-page="pageNo" v-model:page-size="pageSize" :page-sizes="[5, 7, 10]"
+                :background="true" layout="prev, pager, next, jumper,->,total, sizes," :total="total"
+                @size-change="handleSizeChange" @current-change="getHasRole" />
+            <el-dialog :title="roleParams.id ? '修改角色' : '添加角色'" v-model="dialog">
+                <el-form :model="roleParams" :rules="rules" ref="form">
+                    <el-form-item label="角色名称" prop="roleName">
+                        <el-input placeholder="请输入角色名称" v-model="roleParams.roleName"></el-input>
+                    </el-form-item>
+
+                </el-form>
+                <template #footer>
+                    <span>
+                        <el-button @click="cancel">取消</el-button>
+                        <el-button type="primary" @click="confirmAddOrUpdateRole">确认</el-button>
+                    </span>
+                </template>
+            </el-dialog>
+
         </el-card>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref,onMounted } from 'vue';
-import {RoleResponseData,RoleData} from '@/api/acl/role/type'
-import {reqRoleArr} from '@/api/acl/role'
+import { ref, onMounted, reactive, nextTick } from 'vue';
+import { RoleResponseData, RoleData } from '@/api/acl/role/type'
+import { reqRoleArr, reqSaveOrUpdateRole } from '@/api/acl/role'
 import useLayOutSettingStore from '@/store/modules/setting'
+import { ElMessage } from 'element-plus';
 let layoutSettingStore = useLayOutSettingStore()
 let pageNo = ref<number>(1)
 let pageSize = ref<number>(5)
 let total = ref<number>(0)
 let roleArr = ref<RoleData[]>([])
 let roleName = ref<string>('')
+let dialog = ref<boolean>(false)
+let roleParams = reactive<RoleData>({
+    roleName: ''
+})
+let form = ref<any>()
 onMounted(() => {
     getHasRole()
 })
-const getHasRole = async(pager = 1 ) => {
+const getHasRole = async (pager = 1) => {
     pageNo.value = pager
-    let result:RoleResponseData = await reqRoleArr(pageNo.value,pageSize.value,roleName.value)
+    let result: RoleResponseData = await reqRoleArr(pageNo.value, pageSize.value, roleName.value)
     roleArr.value = result.data.records
     total.value = result.data.total
-    console.log(result);
 }
 const handleSizeChange = () => {
     getHasRole()
@@ -64,6 +83,51 @@ const search = () => {
 }
 const reset = () => {
     layoutSettingStore.refresh = !layoutSettingStore.refresh
+}
+const addRole = () => {
+    dialog.value = true
+    roleParams.roleName = ''
+    roleParams.id = 0
+    nextTick(() => { form.value.clearValidate('roleName') })
+
+}
+const confirmAddOrUpdateRole = async () => {
+    let result: any = await reqSaveOrUpdateRole(roleParams)
+    if (result.code == 200) {
+        dialog.value = false
+        ElMessage({
+            type: 'success',
+            message: roleParams.id ? '修改角色成功' : '添加角色成功'
+        })
+        getHasRole(roleParams.id ? pageNo.value : 1)
+    } else {
+        dialog.value = false
+        ElMessage({
+            type: 'success',
+            message: roleParams.id ? '修改角色失败' : '添加角色失败'
+        })
+        getHasRole(roleParams.id ? pageNo.value : 1)
+    }
+
+}
+const updateRole = (row: any) => {
+    dialog.value = true
+    Object.assign(roleParams, row)
+
+}
+const cancel = () => {
+    dialog.value = false
+}
+const validateRoleName = (rule: any, value: any, callback: any) => {
+    console.log(value);
+    if (value.trim().length >= 2) {
+        callback()
+    } else {
+        callback(new Error('角色名称长度必须大于2'))
+    }
+}
+const rules = {
+    roleName: [{ required: true, trigger: 'blur', validator: validateRoleName }]
 }
 </script>
 
