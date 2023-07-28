@@ -50,14 +50,14 @@
                 </template>
                 <template #default>
                     <div>
-                        <el-tree :data="treeArr" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
-                            :default-checked-keys="[5]" :props="defaultProps" />
+                        <el-tree  ref="tree" :data="treeArr" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
+                            :default-checked-keys="selectArr" :props="defaultProps" />
                     </div>
                 </template>
                 <template #footer>
                     <div style="flex: auto">
                         <el-button @click="cancelClick">取消</el-button>
-                        <el-button type="primary" @click="confirmClick">确定</el-button>
+                        <el-button type="primary" @click="addSetPermission">确定</el-button>
                     </div>
                 </template>
             </el-drawer>
@@ -67,8 +67,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { RoleResponseData, RoleData,MenuData,MenuResponseData} from '@/api/acl/role/type'
-import { reqRoleArr, reqSaveOrUpdateRole,reqAllMenuList } from '@/api/acl/role'
+import { RoleResponseData, RoleData, MenuData, MenuResponseData } from '@/api/acl/role/type'
+import { reqRoleArr, reqSaveOrUpdateRole, reqAllMenuList,reqSetPermisson } from '@/api/acl/role'
 import useLayOutSettingStore from '@/store/modules/setting'
 import { ElMessage } from 'element-plus';
 let layoutSettingStore = useLayOutSettingStore()
@@ -84,7 +84,8 @@ let roleParams = reactive<RoleData>({
 let form = ref<any>()
 let drawer = ref<boolean>(false)
 let treeArr = ref<MenuData[]>([])
-
+let selectArr = ref<number[]>([]);
+let tree = ref<any>()
 const defaultProps = {
     children: 'children',
     label: 'name',
@@ -136,18 +137,56 @@ const confirmAddOrUpdateRole = async () => {
 const updateRole = (row: any) => {
     dialog.value = true
     Object.assign(roleParams, row)
-    
+
 }
 const cancel = () => {
     dialog.value = false
 }
-const setPesmission = async(row:any) => {
+const setPesmission = async (row: any) => {
     drawer.value = true
-    Object.assign(roleParams,row)
-    let result:MenuResponseData = await reqAllMenuList((roleParams.id as number))
-    console.log(result);
-    if(result.code==200){
+    Object.assign(roleParams, row)
+    let result: MenuResponseData = await reqAllMenuList((roleParams.id as number))
+    if (result.code == 200) {
         treeArr.value = result.data
+        selectArr.value = filterSelectArr(treeArr.value, []);
+    }
+}
+const filterSelectArr = (allData: any, initArr: any) => {
+    allData.forEach((item: any) => {
+        if (item.select && item.level == 4) {
+            initArr.push(item.id);
+        }
+        if (item.children && item.children.length > 0) {
+            filterSelectArr(item.children, initArr);
+        }
+    })
+
+    return initArr;
+}
+const cancelClick =() => {
+    drawer.value = false
+}
+const addSetPermission = async() => {
+    let roleId = roleParams.id
+    let arr = tree.value.getCheckedKeys();
+    //半选的ID
+    let arr1 = tree.value.getHalfCheckedKeys();
+    let permissionId:number[] = arr.concat(arr1)
+    let result = await reqSetPermisson((roleId as number),permissionId)
+    if(result.code==200){
+        drawer.value = false
+          ElMessage({
+            type:'success',
+            message:'分配权限成功'
+          })
+          window.location.reload()
+    }else{
+        drawer.value = false
+        ElMessage({
+            type:'error',
+            message:'分配权限失败'
+          })
+          window.location.reload()
     }
 }
 const validateRoleName = (rule: any, value: any, callback: any) => {
