@@ -99,7 +99,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { reqUserInfo, reqAddOrUpdateUserInfo, reqAllRole, reqSetUserRole, reqRemoveUser, reqRemoveAllUser } from '@/api/acl/user'
+import { reqUserInfo, reqAddOrUpdateUserInfo, reqAllRole, reqSetUserRole, reqRemoveUser, reqRemoveAllUser, } from '@/api/acl/user'
 import { User, Records, allRoleResponseData, RoleData, SetRoleData } from '@/api/acl/user/type'
 import { ElMessage } from 'element-plus';
 import useLayOutSettingStore from '@/store/modules/setting'
