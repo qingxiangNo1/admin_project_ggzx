@@ -21,7 +21,7 @@
                 <el-table-column label="更新时间" align="center" prop="updateTime" width="250px"></el-table-column>
                 <el-table-column label="操作" align="center">
                     <template #='{ row, $index }'>
-                        <el-button type="primary" icon="User" size="small">分配权限</el-button>
+                        <el-button type="primary" icon="User" size="small" @click="setPesmission(row)">分配权限</el-button>
                         <el-button type="primary" icon="Edit" size="small" @click="updateRole(row)">编辑</el-button>
                         <el-button type="primary" icon="Delete" size="small">删除</el-button>
                     </template>
@@ -44,15 +44,31 @@
                     </span>
                 </template>
             </el-dialog>
-
+            <el-drawer v-model="drawer">
+                <template #header>
+                    <h4>分配权限</h4>
+                </template>
+                <template #default>
+                    <div>
+                        <el-tree :data="treeArr" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
+                            :default-checked-keys="[5]" :props="defaultProps" />
+                    </div>
+                </template>
+                <template #footer>
+                    <div style="flex: auto">
+                        <el-button @click="cancelClick">取消</el-button>
+                        <el-button type="primary" @click="confirmClick">确定</el-button>
+                    </div>
+                </template>
+            </el-drawer>
         </el-card>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
-import { RoleResponseData, RoleData } from '@/api/acl/role/type'
-import { reqRoleArr, reqSaveOrUpdateRole } from '@/api/acl/role'
+import { RoleResponseData, RoleData,MenuData,MenuResponseData} from '@/api/acl/role/type'
+import { reqRoleArr, reqSaveOrUpdateRole,reqAllMenuList } from '@/api/acl/role'
 import useLayOutSettingStore from '@/store/modules/setting'
 import { ElMessage } from 'element-plus';
 let layoutSettingStore = useLayOutSettingStore()
@@ -66,6 +82,13 @@ let roleParams = reactive<RoleData>({
     roleName: ''
 })
 let form = ref<any>()
+let drawer = ref<boolean>(false)
+let treeArr = ref<MenuData[]>([])
+
+const defaultProps = {
+    children: 'children',
+    label: 'name',
+}
 onMounted(() => {
     getHasRole()
 })
@@ -113,10 +136,19 @@ const confirmAddOrUpdateRole = async () => {
 const updateRole = (row: any) => {
     dialog.value = true
     Object.assign(roleParams, row)
-
+    
 }
 const cancel = () => {
     dialog.value = false
+}
+const setPesmission = async(row:any) => {
+    drawer.value = true
+    Object.assign(roleParams,row)
+    let result:MenuResponseData = await reqAllMenuList((roleParams.id as number))
+    console.log(result);
+    if(result.code==200){
+        treeArr.value = result.data
+    }
 }
 const validateRoleName = (rule: any, value: any, callback: any) => {
     console.log(value);
