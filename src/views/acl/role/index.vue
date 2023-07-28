@@ -23,7 +23,12 @@
                     <template #='{ row, $index }'>
                         <el-button type="primary" icon="User" size="small" @click="setPesmission(row)">分配权限</el-button>
                         <el-button type="primary" icon="Edit" size="small" @click="updateRole(row)">编辑</el-button>
-                        <el-button type="primary" icon="Delete" size="small">删除</el-button>
+                        <el-popconfirm :title="`你确定删除${row.roleName}吗？`" @confirm="deleteRole(row)">
+                            <template #reference>
+                                <el-button type="primary" icon="Delete" size="small">删除</el-button>
+                            </template>
+                        </el-popconfirm>
+                        
                     </template>
                 </el-table-column>
             </el-table>
@@ -50,7 +55,7 @@
                 </template>
                 <template #default>
                     <div>
-                        <el-tree  ref="tree" :data="treeArr" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
+                        <el-tree ref="tree" :data="treeArr" show-checkbox node-key="id" :default-expanded-keys="[2, 3]"
                             :default-checked-keys="selectArr" :props="defaultProps" />
                     </div>
                 </template>
@@ -68,7 +73,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive, nextTick } from 'vue';
 import { RoleResponseData, RoleData, MenuData, MenuResponseData } from '@/api/acl/role/type'
-import { reqRoleArr, reqSaveOrUpdateRole, reqAllMenuList,reqSetPermisson } from '@/api/acl/role'
+import { reqRoleArr, reqSaveOrUpdateRole, reqAllMenuList, reqSetPermisson, reqRemoveRole } from '@/api/acl/role'
 import useLayOutSettingStore from '@/store/modules/setting'
 import { ElMessage } from 'element-plus';
 let layoutSettingStore = useLayOutSettingStore()
@@ -163,30 +168,46 @@ const filterSelectArr = (allData: any, initArr: any) => {
 
     return initArr;
 }
-const cancelClick =() => {
+const cancelClick = () => {
     drawer.value = false
 }
-const addSetPermission = async() => {
+const addSetPermission = async () => {
     let roleId = roleParams.id
     let arr = tree.value.getCheckedKeys();
     //半选的ID
     let arr1 = tree.value.getHalfCheckedKeys();
-    let permissionId:number[] = arr.concat(arr1)
-    let result = await reqSetPermisson((roleId as number),permissionId)
-    if(result.code==200){
-        drawer.value = false
-          ElMessage({
-            type:'success',
-            message:'分配权限成功'
-          })
-          window.location.reload()
-    }else{
+    let permissionId: number[] = arr.concat(arr1)
+    let result = await reqSetPermisson((roleId as number), permissionId)
+    if (result.code == 200) {
         drawer.value = false
         ElMessage({
-            type:'error',
-            message:'分配权限失败'
-          })
-          window.location.reload()
+            type: 'success',
+            message: '分配权限成功'
+        })
+        window.location.reload()
+    } else {
+        drawer.value = false
+        ElMessage({
+            type: 'error',
+            message: '分配权限失败'
+        })
+        window.location.reload()
+    }
+}
+const deleteRole = async (row: any) => {
+    let result = await reqRemoveRole(row.id)
+    if (result.code == 200) {
+        ElMessage({
+            type: 'success',
+            message: `删除${row.roleName}成功`
+        })
+        getHasRole(roleArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
+    } else {
+        ElMessage({
+            type: 'error',
+            message: `删除${row.roleName}失败`
+        })
+        getHasRole(roleArr.value.length > 1 ? pageNo.value : pageNo.value - 1)
     }
 }
 const validateRoleName = (rule: any, value: any, callback: any) => {
