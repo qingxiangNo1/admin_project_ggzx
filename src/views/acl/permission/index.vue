@@ -11,12 +11,16 @@
                             row.level == 3 ? '添加功能' : '添加菜单' }}</el-button>
                     <el-button type="primary" size="small" icon="Edit" @click="updateMenuOrFunction(row)"
                         :disabled="row.level == 1 ? true : false">编辑</el-button>
-                    <el-button type="primary" size="small" icon="Delete" @click=""
-                        :disabled="row.level == 1 ? true : false">删除</el-button>
+                    <el-popconfirm :title="`你确定删除${row.name}吗？`" @confirm="deleteMenu(row)">
+                        <template #reference>
+                            <el-button type="primary" size="small" icon="Delete"
+                                :disabled="row.level == 1 ? true : false">删除</el-button>
+                        </template>
+                    </el-popconfirm>
                 </template>
             </el-table-column>
         </el-table>
-        <el-dialog v-model="dialogVisible" :title="menuData.id?'修改菜单':'添加菜单'">
+        <el-dialog v-model="dialogVisible" :title="menuData.id ? '修改菜单' : '添加菜单'">
             <el-form label-width="70px">
                 <el-form-item label="名称">
                     <el-input placeholder="请填写名称" size="normal" v-model="menuData.name"></el-input>
@@ -40,7 +44,7 @@
 <script setup lang="ts">
 import { ref, onMounted, reactive } from 'vue';
 import { PermissionData, PermissionResponseData, MenuParams } from '@/api/acl/menu/type'
-import { reqAllPermission, reqAddOrUpdataMenu } from '@/api/acl/menu'
+import { reqAllPermission, reqAddOrUpdataMenu, reqDeleteMenu } from '@/api/acl/menu'
 import { ElMessage } from 'element-plus';
 let allMenuArr = ref<PermissionData[]>([])
 let dialogVisible = ref<boolean>(false)
@@ -57,7 +61,6 @@ onMounted(() => {
 })
 const getHasPermission = async () => {
     let result: PermissionResponseData = await reqAllPermission()
-    console.log(result);
     if (result.code == 200) {
         allMenuArr.value = result.data
     } else {
@@ -67,7 +70,7 @@ const getHasPermission = async () => {
 const addMenuOrFunction = (row: any) => {
     Object.assign(menuData,
         {
-            id:0,
+            id: 0,
             code: '',
             level: 0,
             name: '',
@@ -97,7 +100,23 @@ const confirmAddMenuOrFunction = async () => {
 }
 const updateMenuOrFunction = (row: any) => {
     dialogVisible.value = true
-    Object.assign(menuData,row)
+    Object.assign(menuData, row)
+}
+const deleteMenu = async (row: any) => {
+    let result: any = await reqDeleteMenu(row.id)
+    if (result.code == 200) {
+        getHasPermission()
+        ElMessage({
+            type: 'success',
+            message: `删除${row.name}成功`
+        })
+    } else {
+        getHasPermission()
+        ElMessage({
+            type: 'error',
+            message: `删除${row.name}失败`
+        })
+    }
 }
 </script>
 
