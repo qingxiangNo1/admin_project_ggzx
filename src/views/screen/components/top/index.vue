@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+//@ts-ignore
 import moment from 'moment'
 import { useRouter } from 'vue-router';
 import { onMounted,onBeforeUnmount,ref } from 'vue';

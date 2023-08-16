@@ -38,13 +38,13 @@
                 <el-table border style="margin: 10px 0px;" :data="imgArr" ref="table">
                     <el-table-column type="selection" align="center" width="80px"></el-table-column>
                     <el-table-column label="图片" align="center">
-                        <template #='{ row, $index }'>
+                        <template #='{ row }'>
                             <img :src="row.imgUrl" alt="" style="width: 100px; height: 100px;">
                         </template>
                     </el-table-column>
                     <el-table-column label="名称" align="center" prop="imgName"></el-table-column>
                     <el-table-column label="操作" align="center">
-                        <template #='{ row, $index }'>
+                        <template #='{ row }'>
                             <el-button type="primary" size="small" @click="handle(row)">设为默认</el-button>
                         </template>
                     </el-table-column>

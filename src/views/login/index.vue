@@ -41,6 +41,7 @@ const validatorUserName = (rule: any, value: any, callback: any) => {
         callback();
     } else {
         callback(new Error('账号长度是5-10位'))
+        console.log(rule);
     }
 }
 const validatorPassword = (rule: any, value: any, callback: any) => {
@@ -48,6 +49,7 @@ const validatorPassword = (rule: any, value: any, callback: any) => {
         callback();
     } else {
         callback(new Error('密码长度是6-15位'))
+        console.log(rule);
     }
 }
 const rules = {

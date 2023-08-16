@@ -7,14 +7,14 @@
                 <el-table-column label="描述" width="300px" align="center" prop="skuDesc"
                     show-overflow-tooltip></el-table-column>
                 <el-table-column label="图片" width="150px" align="center">
-                    <template #='{ row, $index }'>
+                    <template #='{ row }'>
                         <img :src="row.skuDefaultImg" alt="" style="width: 100px;height: 100px;">
                     </template>
                 </el-table-column>
                 <el-table-column label="重量(kg)" width="150px" align="center" prop="weight"></el-table-column>
                 <el-table-column label="价格" width="150px" align="center" prop="price"></el-table-column>
                 <el-table-column label="操作" width="300px" align="center" fixed="right">
-                    <template #='{ row, index }'>
+                    <template #='{ row }'>
                         <el-button type="primary" size="small" @click="saleAndCancelSku(row)"
                             :icon="row.isSale == 0 ? 'Top' : 'Bottom'"></el-button>
                         <el-button type="primary" size="small" @click="updateSku" icon="Edit"></el-button>

@@ -5,7 +5,7 @@
             <el-table-column label="权限值" align="center" prop="code"></el-table-column>
             <el-table-column label="修改时间" align="center" prop="updateTime"></el-table-column>
             <el-table-column label="操作" align="center">
-                <template #='{ row, $index }'>
+                <template #='{ row }'>
                     <el-button type="primary" size="small" icon="Plus" @click="addMenuOrFunction(row)"
                         :disabled="row.level == 4 ? true : false">{{
                             row.level == 3 ? '添加功能' : '添加菜单' }}</el-button>

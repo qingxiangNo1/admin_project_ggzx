@@ -13,7 +13,7 @@
                     <el-table-column label="属性名称" width="200px" align="center" prop="attrName">
                     </el-table-column>
                     <el-table-column label="属性值名称" align="center">
-                        <template #='{ row, $index }'>
+                        <template #='{ row }'>
                             <el-tag class="ml-2" style="margin: 0px 5px;" type="success"
                                 v-for="(item, index) in row.attrValueList" :key="index">{{ item.valueName }}</el-tag>
                         </template>
@@ -21,7 +21,7 @@
                     <!-- row：已有的属性对象 -->
                     <el-table-column label="操作" width="200px" align="center">
                         <!-- 修改已有属性的按钮 -->
-                        <template #='{ row, $index }'>
+                        <template #='{ row }'>
                             <el-button type="success" size="small" icon="Edit" @click="updateAttr(row)"></el-button>
                             <el-popconfirm :title="`你确定删除${row.attrName}吗?`" @confirm="deleteAttr(row.id)">
                                 <template #reference>
@@ -55,7 +55,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column label="操作" align="center">
-                        <template #='{ row, $index }'>
+                        <template #='{ $index }'>
                             <el-button type="danger" size="small" icon="Delete"
                                 @click="attrParams.attrValueList.splice($index, 1)"></el-button>
                         </template>

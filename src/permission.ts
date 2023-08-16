@@ -16,6 +16,7 @@ router.beforeEach(async (to, from, next) => {
     //next:路由的放行函数
     document.title = `${setting.title}-${to.meta.title}`
     nprogress.start()
+    console.log(from);
     const token = userStore.token //获取token,去判断用户登录、还是未登录
     const username = userStore.username   //获取用户名字
     if (token) {
@@ -31,7 +32,7 @@ router.beforeEach(async (to, from, next) => {
                 //用户刷新页面 失去username 重新调用接口
                 try {
                     await userStore.userInfo()
-                    next();
+                    next({...to});
                 } catch (error) {
                     await userStore.userLogout();
                     next({ path: '/login', query: { redirect: to.path } })
@@ -48,7 +49,7 @@ router.beforeEach(async (to, from, next) => {
     }
 })
 //全局后置守卫
-router.afterEach((to, from) => {
+router.afterEach(() => {
     nprogress.done();
 })
 //第一个问题:任意路由切换实现进度条业务 ---nprogress

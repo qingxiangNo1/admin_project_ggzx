@@ -1,7 +1,7 @@
 //创建用户相关的小仓库
 import { defineStore } from 'pinia'
 //引入登录需要的参数类型
-import { loginFormData, loginResponseData, userInfoReponseData } from '@/api/user/type'
+import { loginFormData,  userInfoReponseData } from '@/api/user/type'
 //引入登录接口
 import { reqLogin, reqLogout, reqUserInfo } from '@/api/user'
 import { userState } from './types/type'
@@ -34,7 +34,8 @@ let useUserStore = defineStore('User', {
             token: GET_TOKEN(),//用户唯一标识token
             menuRoutes: constantRoute,//仓库存储数据生成菜单需要数组（路由）
             username: '',
-            avatar: ''
+            avatar: '',
+            buttons:[],
         }
     },
     actions: {
@@ -43,7 +44,7 @@ let useUserStore = defineStore('User', {
         async userLogin(data: loginFormData) {
             // 登录请求：成功200-》token
             //登录请求：失败201-》错误信息
-            const result: loginResponseData = await reqLogin(data);
+            const result: any = await reqLogin(data);
             if (result.code == 200) {
                 // pinia仓库存储一下token
                 this.token = (result.data as string);
@@ -61,6 +62,7 @@ let useUserStore = defineStore('User', {
             if (result.code == 200) {
                 this.username = result.data.name;
                 this.avatar = result.data.avatar
+                this.buttons = result.data.buttons
                 //计算当前用户需要展示的异步路由
                 const userAsyncRoute = filterAsyncRoute(
                     cloneDeep(asnycRoute),

@@ -28,7 +28,7 @@
             <el-form-item label="spu销售属性">
                 <el-select v-model="saleAttrIdAndValueName"
                     :placeholder="unSelectSaleAttr.length ? `还未选择${unSelectSaleAttr.length}个` : '无'">
-                    <el-option :value="`${item.id}:${item.name}`" v-for="(item, index) in unSelectSaleAttr" :key="item.id"
+                    <el-option :value="`${item.id}:${item.name}`" v-for="(item) in unSelectSaleAttr" :key="item.id"
                         :label="item.name"></el-option>
                 </el-select>
                 <el-button @click="addSaleAttr" :disabled="saleAttrIdAndValueName ? false : true" style="margin-left:10px"
@@ -39,7 +39,7 @@
                     <el-table-column label="属性名" align="center" prop="saleAttrName">
                     </el-table-column>
                     <el-table-column label="属性值" align="center">
-                        <template #='{ row, $index }'>
+                        <template #='{ row }'>
                             <el-tag style="margin:0px 5px" @close="row.spuSaleAttrValueList.splice(index, 1)"
                                 v-for="(item, index) in row.spuSaleAttrValueList" :key="row.id" class="mx-1" closable>
                                 {{ item.saleAttrValueName }}
@@ -51,8 +51,12 @@
                     </el-table-column>
                     <el-table-column label="操作" align="center">
                         <template #='{ row, $index }'>
-                            <el-button type="primary" size="small" @click="saleAttr.splice($index, 1)"
+                            <el-popconfirm :title="`你确定删除${row.spuName}吗？`" @confirm="saleAttr.splice($index, 1)">
+                                <template #reference>
+                                    <el-button type="primary" size="small" 
                                 icon="Delete"></el-button>
+                                </template>
+                            </el-popconfirm>
                         </template>
                     </el-table-column>
 
@@ -91,7 +95,7 @@ let SpuParams = ref<SpuData>({
 let dialogVisible = ref<boolean>(false)
 let dialogImageUrl = ref<string>('')
 const cancel = () => {
-    $emit('changeScene', {flag:0,params:SpuParams.value.id?'update':'add'})
+    $emit('changeScene', { flag: 0, params: SpuParams.value.id ? 'update' : 'add' })
 }
 const initHasSpuData = async (row: any) => {
     SpuParams.value = row
@@ -223,13 +227,13 @@ const save = async () => {
             type: 'success',
             message: SpuParams.value.id ? '修改成功' : '上传成功'
         })
-        $emit('changeScene', {flag:0,params:SpuParams.value.id?'update':'add'})
+        $emit('changeScene', { flag: 0, params: SpuParams.value.id ? 'update' : 'add' })
     } else {
         ElMessage({
             type: 'error',
             message: SpuParams.value.id ? '修改失败' : '上传失败'
         })
-        $emit('changeScene', {flag:0,params:SpuParams.value.id?'update':'add'})
+        $emit('changeScene', { flag: 0, params: SpuParams.value.id ? 'update' : 'add' })
 
     }
 

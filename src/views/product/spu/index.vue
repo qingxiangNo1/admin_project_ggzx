@@ -18,7 +18,7 @@
                 </el-table-column>
                 <el-table-column label="操作">
                     <!-- row:即为已有的SPU对象 -->
-                    <template #='{ row, $index }'>
+                    <template #='{ row }'>
                         <el-button type="primary" size="small" @click="edit(row)" icon="Edit" title="编辑spu">
                         </el-button>
                         <el-button type="primary" size="small" @click="addSku(row)" icon="Plus" title="添加sku">
@@ -50,7 +50,7 @@
                 <el-table-column label="SKU价格" prop="price" align="center"></el-table-column>
                 <el-table-column label="SKU重量" prop="weight" align="center"></el-table-column>
                 <el-table-column label="SKU图片" align="center">
-                    <template #='{ row, $index }'>
+                    <template #='{ row}'>
                         <img :src="row.skuDefaultImg" alt="" style="weight:100px;height: 100px;">
                     </template>
                 </el-table-column>

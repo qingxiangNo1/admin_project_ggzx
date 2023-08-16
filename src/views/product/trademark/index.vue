@@ -12,12 +12,12 @@
                 <el-table-column label="品牌名称" prop="tmName">
                 </el-table-column>
                 <el-table-column label="品牌LOGO">
-                    <template #="{ row, $index }">
+                    <template #="{ row }">
                         <img :src="row.logoUrl" alt="图片不存在" style="width: 100px;height: 100px;">
                     </template>
                 </el-table-column>
                 <el-table-column label="品牌操作">
-                    <template #='{ row, index }'>
+                    <template #='{ row }'>
                         <el-button type="primary" size="small" icon="Edit" @click="updateTrademark(row)"></el-button>
                         <el-popconfirm :title="`你确定删除${row.tmName}吗？`" width="300px" icon="Delete"
                             @confirm="deleteTrademark(row.id)">
@@ -79,7 +79,7 @@
 import { reqHasTrademark, reqAddOrUpdateTrademark, reqDeleteTrademark } from '@/api/product/trademark'
 import { onMounted, reactive, ref, nextTick } from 'vue'; //引入组合式API函数ref
 import type { Records, TradeMarkResponseData, TradeMark } from '@/api/product/trademark/type'
-import { ElMessage } from 'element-plus';
+import { ElMessage,UploadProps } from 'element-plus';
 //组件挂载完毕钩子---发一次请求,获取第一页、一页三个已有品牌数据
 onMounted(() => {
     getHasTrademark()
@@ -104,6 +104,7 @@ const validatorTmName = (rule: any, value: any, callBack: any) => {
     } else {
         //校验未通过返回的错误的提示信息
         callBack(new Error('品牌名称位数大于等于两位'))
+        console.log(rule);
     }
 }
 // 品牌LOGO图片的自定义校验规则方法
@@ -113,6 +114,7 @@ const validatorLogoUrl = (rule: any, value: any, callBack: any) => {
         callBack()
     } else {
         callBack(new Error('LOGO图片务必上传'))
+        console.log(rule);
     }
 }
 //表单校验规则对象
@@ -207,7 +209,7 @@ const deleteTrademark = async (id: number) => {
 
 }
 //上传图片组件->上传图片之前触发的钩子函数
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile:any) => {
     //钩子是在图片上传成功之前触发,上传文件之前可以约束文件类型与大小
     //要求:上传文件格式png|jpg|gif 4M
     if (rawFile.type == 'image/jpeg' || rawFile.type == 'image/png') {
@@ -229,7 +231,7 @@ const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
     }
 }
 //图片上传成功钩子
-const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+const handleAvatarSuccess: UploadProps['onSuccess'] = (response) => {
     //response:即为当前这次上传图片post请求服务器返回的数据
     //收集上传图片的地址,添加一个新的品牌的时候带给服务器
     trademarkParms.logoUrl = response.data;

@@ -20,7 +20,7 @@
                 <el-table-column label="创建时间" align="center" prop="createTime" width="250px"></el-table-column>
                 <el-table-column label="更新时间" align="center" prop="updateTime" width="250px"></el-table-column>
                 <el-table-column label="操作" align="center">
-                    <template #='{ row, $index }'>
+                    <template #='{ row }'>
                         <el-button type="primary" icon="User" size="small" @click="setPesmission(row)">分配权限</el-button>
                         <el-button type="primary" icon="Edit" size="small" @click="updateRole(row)">编辑</el-button>
                         <el-popconfirm :title="`你确定删除${row.roleName}吗？`" @confirm="deleteRole(row)">
@@ -216,6 +216,7 @@ const validateRoleName = (rule: any, value: any, callback: any) => {
         callback()
     } else {
         callback(new Error('角色名称长度必须大于2'))
+        console.log(rule);
     }
 }
 const rules = {

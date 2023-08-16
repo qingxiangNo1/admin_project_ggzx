@@ -24,7 +24,7 @@
                 <el-table-column label="创建时间" align="center" prop="createTime"></el-table-column>
                 <el-table-column label="更新时间" align="center" prop="updateTime"></el-table-column>
                 <el-table-column label="操作" align="center" width="300px">
-                    <template #='{ row, $index }'>
+                    <template #='{ row }'>
                         <el-button type="primary" size="small" @click="setRole(row)" icon="User">分配角色</el-button>
                         <el-button type="primary" size="small" @click="updateUser(row)" icon="Edit">编辑</el-button>
                         <el-popconfirm :title="`你确定删除${row.username}吗?`" @confirm="deleteUser(row)">
@@ -176,6 +176,9 @@ const save = async () => {
         getUserInfo()
     }
 }
+const confirmClick = () => {
+    drawer.value = false
+}
 const setRole = async (row: any) => {
     drawer1.value = true
     Object.assign(userParams, row)
@@ -264,6 +267,7 @@ const validateUsername = (rule: any, value: any, callback: any) => {
         callback()
     } else {
         callback(new Error('用户姓名至少五位'))
+        console.log(rule);
     }
 }
 const validateName = (rule: any, value: any, callback: any) => {
@@ -271,6 +275,7 @@ const validateName = (rule: any, value: any, callback: any) => {
         callback()
     } else {
         callback(new Error('用户昵称至少五位'))
+        console.log(rule);
     }
 }
 const validatePassword = (rule: any, value: any, callback: any) => {
@@ -278,6 +283,7 @@ const validatePassword = (rule: any, value: any, callback: any) => {
         callback()
     } else {
         callback(new Error('用户姓名至少六位'))
+        console.log(rule);
     }
 }
 const rules = {
